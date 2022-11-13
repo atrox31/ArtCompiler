@@ -68,7 +68,7 @@ ACompiler.exe -lib C:\\AScript.lib -obj C:\\object_definition1.asc  -obj C:\\obj
     function test_obj:EV_ONMOUSE_DOWN
     	moving = true
     	Target = get_global_mouse()
+     @end
 
-@end
  - this make object that draw texture and follow mouse clicks on map
  
