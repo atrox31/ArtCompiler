@@ -86,7 +86,7 @@ bool TryToParse(std::string value, std::string type) {
 		
 		return true;
 	}
-	//Error("type must be primitive");
+	Error("type must be primitive");
 	return false;
 }
 
@@ -312,7 +312,7 @@ int main(int argc, char** argv) {
 		if (mode == "-debug") {
 			output = "D:\\projekt\\object_compile.acp";
 			fWrapper::AddLib("D:\\projekt\\AScript.lib");
-			oWrapper::CreateObject("D:\\projekt\\projekt6\\object\\test_obj\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\final_test_project\\object\\instance_w_sprite\\main.asc");
 			atLeastOneLibIsLoaded = true;
 			atLeastOneObjectisLoaded = true;
 			atLestOutputIsLoaded = true;
@@ -384,11 +384,13 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 	// compiller
+	/*
 	WriteCommand(Command::TYPEDEF);
 	for (int i = 0; i < ARRAY_SIZE(varible_type); i++) {
 		WriteString(varible_type[i]);
 	}
 	WriteCommand(Command::END);
+	*/
 
 	for (Object* obj : oWrapper::GetObjects()) {
 		WriteCommand(Command::OBJECT_DEFINITION);
@@ -539,5 +541,7 @@ int main(int argc, char** argv) {
 	for (const auto& e : OutputCode) {
 		outFile << e;
 	}
+	outFile.close();
+	std::cout << "Created " << output << std::endl;
 	return EXIT_SUCCESS;
 }
