@@ -313,6 +313,7 @@ int main(int argc, char** argv) {
 			output = "D:\\projekt\\object_compile.acp";
 			fWrapper::AddLib("D:\\projekt\\AScript.lib");
 			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\final_test_project\\object\\instance_w_sprite\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\final_test_project\\object\\instance_w_texture\\main.asc");
 			atLeastOneLibIsLoaded = true;
 			atLeastOneObjectisLoaded = true;
 			atLestOutputIsLoaded = true;
