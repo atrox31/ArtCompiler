@@ -289,8 +289,12 @@ inline bool file_exists(const std::string& name) {
 	return f.good();
 }
 
+const int VERSION_MAIN = 1;
+const int VERSION_SUB = 2;
+
+
 int main(int argc, char** argv) {
-	std::cout << "ArtCore Compiler 1.0" << std::endl;
+	std::cout << "ArtCore Compiler " << VERSION_MAIN << "." << VERSION_SUB << std::endl;
 	fWrapper::Init();
 	oWrapper::Init();
 	std::string output = "";
@@ -308,6 +312,9 @@ int main(int argc, char** argv) {
 		std::string mode = argv[i];
 		if (mode.back() == ' ') {
 			mode = mode.substr(0, mode.length() - 2);
+		}
+		if (mode == "-version") {
+			std::cout << VERSION_MAIN << "." << VERSION_SUB << std::endl;
 		}
 		if (mode == "-debug") {
 			output = "D:\\projekt\\object_compile.acp";
