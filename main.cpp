@@ -412,8 +412,8 @@ int main(int argc, char** argv) {
 		}
 		WriteCommand(Command::END);
 
-		WriteCommand(Command::FUNCTION_DEFINITION);
 		for (auto& fun : obj->Functions) {
+			WriteCommand(Command::FUNCTION_DEFINITION);
 			WriteString(fun.first);
 			cObject = obj->Name;
 			cFunc = fun.first;
