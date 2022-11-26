@@ -548,6 +548,7 @@ int main(int argc, char** argv) {
 
 		}
 		WriteCommand(Command::END);
+		std::cout << obj->Name << "<<" << std::endl;
 	}
 	WriteCommand(Command::END);
 
