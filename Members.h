@@ -41,6 +41,7 @@ bool isValidOperator2(std::string type);
 short int getOperator2Index(std::string type);
 
 const std::string varible_type[] = {
+"invalid",
 "null",
 "int",
 "float",
