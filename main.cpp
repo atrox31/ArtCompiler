@@ -216,6 +216,7 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 	WriteCommand(Command::FUNCTION);
 	int args = (short int)func->f_arguments.size();
 	WriteBit((short int)func->index);
+	WriteBit((short int)args);
 	if (tc->Next() != "(") {
 		Error("bad token '(' needed but " + tc->Current() + " given");
 		return false;
