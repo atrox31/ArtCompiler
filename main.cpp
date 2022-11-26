@@ -291,7 +291,7 @@ inline bool file_exists(const std::string& name) {
 }
 
 const int VERSION_MAIN = 1;
-const int VERSION_SUB = 2;
+const int VERSION_SUB = 3;
 
 
 int main(int argc, char** argv) {
@@ -377,7 +377,9 @@ int main(int argc, char** argv) {
 		}
 
 	}
-
+	std::vector<std::string> ExcludeFromCompare = std::vector<std::string>({
+		"point","rectangle","color"
+		});
 	OutputCode = std::vector<unsigned char>();
 
 	if (!atLeastOneLibIsLoaded) {
@@ -493,6 +495,12 @@ int main(int argc, char** argv) {
 										Error("Bad operator, seccond given");
 										return EXIT_FAILURE;
 									}
+
+									if (VectorContain(ExcludeFromCompare, comp_type)) {
+										Error("value type: '" + comp_type + "' cannot be compare");
+										return EXIT_FAILURE;
+									}
+
 									have_operator = true;
 									WriteCommand(Command::OPERATOR);
 									WriteBit(getOperator2Index(token));
