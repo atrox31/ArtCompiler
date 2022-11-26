@@ -496,7 +496,7 @@ int main(int argc, char** argv) {
 										return EXIT_FAILURE;
 									}
 
-									if (VectorContain(ExcludeFromCompare, comp_type)) {
+									if ((std::find(ExcludeFromCompare.begin(), ExcludeFromCompare.end(), comp_type) != ExcludeFromCompare.end())) {
 										Error("value type: '" + comp_type + "' cannot be compare");
 										return EXIT_FAILURE;
 									}
