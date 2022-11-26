@@ -255,7 +255,7 @@ bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
 	if (t_var != nullptr) { // zmienna
 		if (t_var->Type == type) {
 			WriteCommand(Command::LOCAL_VARIBLE);
-			WriteBit(getVaribleIndex(t_var->Type));
+			//WriteBit(getVaribleIndex(t_var->Type));
 			WriteValue(t_var->Type, t_var->index);
 			return true;
 		}
