@@ -29,6 +29,8 @@ std::string cObject = "none";
 std::string cLineCode = "none";
 std::vector<unsigned char> OutputCode;
 
+#define ALLOW_0_LENGTH_STRING true
+
 
 template <typename E>
 constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
@@ -83,10 +85,27 @@ bool TryToParse(std::string value, std::string type) {
 		return false;
 	}
 	else if (type == "string") {
-		
+#if !ALLOW_0_LENGTH_STRING
+		if (value.length() == 0) {
+			Error("try to parse " + value + " to " + type + " - empty string");
+			return false;
+		}
+#endif
 		return true;
 	}
-	Error("type must be primitive");
+	else if (type == "color") {
+		if (value.length() != 7) return false;
+		if (value[0] != '#') return false;
+		for (int i = 1; i < 7; i++) {
+			if ((
+				(value[i] >= '0' && value[i] <= '9') ||
+				(value[i] >= 'a' && value[i] <= 'f') ||
+				(value[i] >= 'A' && value[i] <= 'F')
+				) == false) return false;
+		}
+		return true;
+	}
+	Error("type '"+ type+"' is not supperted yet.");
 	return false;
 }
 
