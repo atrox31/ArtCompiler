@@ -105,6 +105,14 @@ bool TryToParse(std::string value, std::string type) {
 		}
 		return true;
 	}
+	else if (type == "point") {
+		
+		auto point = Split(value, ':');
+		if (point.size() != 2) { Error("try to parse " + value + " to " + type + " - error"); return false; }
+		if (!TryToParse(point[0], "float")){ Error("point[0] of '" + value + "' value='"+ point[0] + "' - error"); return false; }
+		if (!TryToParse(point[1], "float")){ Error("point[1] of '" + value + "' value='"+ point[1] + "' - error"); return false; }
+		return true;
+	}
 	Error("type '"+ type+"' is not supperted yet.");
 	return false;
 }
