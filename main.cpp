@@ -94,9 +94,11 @@ bool TryToParse(std::string value, std::string type) {
 		return true;
 	}
 	else if (type == "color") {
-		if (value.length() != 7) return false;
+		const int len = (int)value.length();
+		// rgb or rgba
+		if ( !(len == 7 || len == 9)) return false;
 		if (value[0] != '#') return false;
-		for (int i = 1; i < 7; i++) {
+		for (int i = 1; i < len; i++) {
 			if ((
 				(value[i] >= '0' && value[i] <= '9') ||
 				(value[i] >= 'a' && value[i] <= 'f') ||
