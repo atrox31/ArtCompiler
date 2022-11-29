@@ -6,10 +6,12 @@ extern std::string cObject;
 
 oWrapper* oWrapper::_instance;
 std::vector<Object*> oWrapper::_obj;
+int oWrapper::c_CodeId;
 
 void oWrapper::Init() {
 	oWrapper::_instance = new oWrapper();
 	oWrapper::_obj = std::vector<Object*>();
+	oWrapper::c_CodeId = 0;
 }
 
 oWrapper::oWrapper() {
@@ -91,6 +93,7 @@ bool oWrapper::CreateObject(std::string file) {
 		}
 
 	}
+	_new_object->CodeId = c_CodeId++;
 	_obj.push_back(_new_object);
 	return true;
 }
@@ -98,5 +101,15 @@ bool oWrapper::CreateObject(std::string file) {
 std::vector<Object*> oWrapper::GetObjects()
 {
 	return _instance->_obj;
+}
+
+Object* oWrapper::GetObjectByName(std::string name)
+{
+	for (auto& obj : _instance->_obj) {
+		if (obj->Name == name) {
+			return obj;
+		}
+	}
+	return nullptr;
 }
 

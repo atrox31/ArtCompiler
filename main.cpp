@@ -48,7 +48,7 @@ enum class Command {
 	OBJECT_VARIBLE,
 	LOCAL_VARIBLE,
 	VALUE,NULL_VALUE,
-	FUNCTION,
+	FUNCTION,OTHER,
 	// operatory
 	SET,
 	OPERATOR,
@@ -320,7 +320,7 @@ inline bool file_exists(const std::string& name) {
 }
 
 const int VERSION_MAIN = 1;
-const int VERSION_SUB = 3;
+const int VERSION_SUB = 4;
 
 
 int main(int argc, char** argv) {
@@ -459,6 +459,35 @@ int main(int argc, char** argv) {
 					tc.Continue();
 					continue;
 				}
+				// other
+				{
+					if (token == "other") {
+						std::string objName = "";
+						if (tc.Next() == "(") {
+							objName = tc.Next();
+						}
+						else {
+							Error("bad token - '(' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+						}
+						Object* ref = oWrapper::GetObjectByName(objName);
+						if (ref == nullptr) {
+							Error("object not found - '" + objName + "'"); return EXIT_FAILURE;
+						}
+						if (tc.Next() != ")") Error("bad token - ')' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+						if (tc.Next() == ".") Error("bad token - '.' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+
+						std::string searched_varible = tc.Next();
+						varible* var = ref->FindLocal(searched_varible);
+						if (var != nullptr) {
+							WriteCommand(Command::OTHER);
+							WriteBit(ref->CodeId);
+							WriteValue(var->Type, var->index);
+						}
+						else {
+							Error("varible '"+searched_varible + "' not found in '" + objName + "' object"); return EXIT_FAILURE;
+						}
+					}
+				}
 				// zmienna
 				{
 					varible* var = obj->FindLocal(token);
@@ -499,6 +528,35 @@ int main(int argc, char** argv) {
 						bool have_operator = false;
 						while (tc.SeekNext() != ")") {
 							token = tc.Next();
+							// other
+							{
+								if (token == "other") {
+									std::string objName = "";
+									if (tc.Next() == "(") {
+										objName = tc.Next();
+									}
+									else {
+										Error("bad token - '(' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+									}
+									Object* ref = oWrapper::GetObjectByName(objName);
+									if (ref == nullptr) {
+										Error("object not found - '" + objName + "'"); return EXIT_FAILURE;
+									}
+									if (tc.Next() != ")") Error("bad token - ')' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+									if (tc.Next() == ".") Error("bad token - '.' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+
+									std::string searched_varible = tc.Next();
+									varible* var = ref->FindLocal(searched_varible);
+									if (var != nullptr) {
+										WriteCommand(Command::OTHER);
+										WriteBit(ref->CodeId);
+										WriteValue(var->Type, var->index);
+									}
+									else {
+										Error("varible '" + searched_varible + "' not found in '" + objName + "' object"); return EXIT_FAILURE;
+									}
+								}
+							}
 							{
 								varible* var = obj->FindLocal(token);
 								if (var != nullptr) {

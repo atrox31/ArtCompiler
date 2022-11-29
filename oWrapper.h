@@ -21,8 +21,10 @@ class oWrapper {
 	static std::vector<Object*> _obj;
 	static oWrapper* _instance;
 public:
+	static int c_CodeId;
 	static void Init();
 	oWrapper();
 	static bool CreateObject(std::string file);
 	static std::vector<Object*> GetObjects();
+	static Object* GetObjectByName(std::string name);
 };

@@ -7,6 +7,7 @@
 class Object {
 	std::vector<varible> _locals;
 public:
+	int CodeId = -1;
 	std::map<std::string, std::string> Functions;
 	std::string Name = "undefined";
 	Object();
