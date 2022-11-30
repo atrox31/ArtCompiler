@@ -58,9 +58,12 @@ enum class Command {
 };
 
 bool TryToParse(std::string value, std::string type) {
+	if (value == "nul") {
+		return true;
+	}else
 	if (type == "int") {
 		try {
-			std::ignore = std::stof(value);
+			std::ignore = std::stoi(value);
 			return true;
 		}
 		catch (...) {
@@ -305,7 +308,11 @@ bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
 			return true;
 		}
 		else {
-			if (TryToParse(g_varible, type)) {
+			std::string token2 = g_varible;
+			if (type == "point") {
+				token2 += tc->Next();
+			}
+			if (TryToParse(token2, type)) {
 				WriteCommand(Command::VALUE);
 				WriteBit(getVaribleIndex(type));
 				WriteString(g_varible);
@@ -639,10 +646,14 @@ int main(int argc, char** argv) {
 							}
 							{
 								if (comp_type == "undefined") {
-									Error("Compilation error, first type to compare must be function or varible",31);
+									Error("Compilation error, first type to compare must be function or varible", 31);
 									return EXIT_FAILURE;
 								}
-								if (TryToParse(token, comp_type)) {
+								std::string token2 = token;
+								if (comp_type == "point"){
+									token2 += tc.Next();
+								}
+								if (TryToParse(token2, comp_type)) {
 									WriteCommand(Command::VALUE);
 									WriteBit(getVaribleIndex(comp_type));
 									WriteString(token);
