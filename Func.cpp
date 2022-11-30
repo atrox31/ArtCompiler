@@ -6,11 +6,12 @@ extern std::string cFunc;
 extern std::string cObject;
 extern std::string cLineCode;
 
-void Error(std::string message) {
-	std::cout << "Error at line: '" << cLine << "' in Object: '" << cObject << "' Function: '" << cFunc << "' - Message: " << message << std::endl;
+void Error2(std::string message, int error_nr) {
+	std::cout << "Error at line: '" << cLine << "' in Object: '" << cObject << "' Function: '" << cFunc << "' - Message: " << message << "[" << error_nr << "]" << std::endl;
 	std::cout << cLineCode << std::endl;
-
+std::exit(error_nr);
 }
+
 const std::vector<std::string> Explode(std::string& String, const char Delim)
 {
 	std::vector<std::string> tokens;
@@ -76,7 +77,8 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 			}
 
 		}// liczbowe
-		else if ( (i > 0 && (line[i - 1] == ' ' && ((line[i] >= '0' && line[i] <= '9') || line[i] == '-')))) {
+		else if (
+			(i > 0 && (line[i - 1] == ' ' && ((line[i] >= '0' && line[i] <= '9') || (line[i] == '-') && (line[i] >= '0' && line[i] <= '9')) ))) {
 			std::string number = "";
 			number += line[i];
 			while (true && i+1 < line.length()) {

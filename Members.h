@@ -20,7 +20,7 @@ const std::string operators[] = {
 "-=",
 "*=",
 "/=",
-"="
+":="
 };
 bool isValidOperator(std::string type);
 short int getOperatorIndex(std::string type);

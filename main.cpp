@@ -64,7 +64,7 @@ bool TryToParse(std::string value, std::string type) {
 			return true;
 		}
 		catch (...) {
-			Error("try to parse " + value + " to " + type + " - error");
+			Error("try to parse '" + value + "' to '" + type + "'",2);
 			return false;
 		}
 	}
@@ -74,20 +74,20 @@ bool TryToParse(std::string value, std::string type) {
 		return true;
 		}
 			catch (...) {
-			Error("try to parse " + value + " to " + type + " - error");
+			Error("try to parse '" + value + "' to '" + type + "'",3);
 			return false;
 		}
 	}
 	else if (type == "bool") {
 		boost::algorithm::to_lower(value);
 		if (value == "true" || value == "false") return true;
-		Error("try to parse " + value + " to " + type + " - error");
+		Error("try to parse '" + value + "' to '" + type + "'",4);
 		return false;
 	}
 	else if (type == "string") {
 #if !ALLOW_0_LENGTH_STRING
 		if (value.length() == 0) {
-			Error("try to parse " + value + " to " + type + " - empty string");
+			Error("try to parse '" + value + "' to '" + type + "'",5);
 			return false;
 		}
 #endif
@@ -110,12 +110,12 @@ bool TryToParse(std::string value, std::string type) {
 	else if (type == "point") {
 		
 		auto point = Split(value, ':');
-		if (point.size() != 2) { Error("try to parse " + value + " to " + type + " - error"); return false; }
-		if (!TryToParse(point[0], "float")){ Error("point[0] of '" + value + "' value='"+ point[0] + "' - error"); return false; }
-		if (!TryToParse(point[1], "float")){ Error("point[1] of '" + value + "' value='"+ point[1] + "' - error"); return false; }
+		if (point.size() != 2) { Error("try to parse " + value + " to " + type + " - error",6); return false; }
+		if (!TryToParse(point[0], "float")){ Error("point[0] of '" + value + "' value='"+ point[0] + "' - error",7); return false; }
+		if (!TryToParse(point[1], "float")){ Error("point[1] of '" + value + "' value='"+ point[1] + "' - error",8); return false; }
 		return true;
 	}
-	Error("type '"+ type+"' is not supperted yet.");
+	Error("type '"+ type+"' is not supperted yet.",15);
 	return false;
 }
 
@@ -162,21 +162,26 @@ public:
 		for (std::string code : Explode(code, '\n')) {
 			std::vector<std::string> tokens = MakeTokens(code);
 			_tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
-			line.push_back((int)_tokens.size()-1);
+			line.push_back((int)tokens.size() - 1);
 			_code.push_back(code);
 		}
 		postion = -1;
 		postion_max = (int)_tokens.size() - 1;
 	}
 
-	std::string GetCode(int line) {
-		if (line >= (int)_code.size()) line = (int)_code.size() - 1;
-		return _code[line];
+	std::string GetCode(int i) {
+		return _code[i];
 	}
 
 	int GetLine() {
+		int cline = 0;
+		int cpos = 0;
 		for (int i = 0; i < line.size() - 1; i++) {
-			if (postion >= line[i] && postion <= line[i + 1]) return line[i];
+			cpos += line[i];
+			cline++;
+			if (cpos >= postion) {
+				return cline;
+			}
 		}
 		return 0;
 	}
@@ -188,7 +193,7 @@ public:
 	bool ExitScope() {
 		int skip = ((int)OutputCode.size() - 1) - skip_ptr.back();
 		if (skip > 254) {
-			Error("scope is too long! ("+std::to_string(skip)+") max 254");
+			Error("scope is too long! ("+std::to_string(skip)+") max 254",9);
 			return false;
 		}
 		OutputCode[skip_ptr.back()] = (unsigned char)skip;
@@ -247,7 +252,7 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 	WriteBit((short int)func->index);
 	WriteBit((short int)args);
 	if (tc->Next() != "(") {
-		Error("bad token '(' needed but " + tc->Current() + " given");
+		Error("bad token '(' needed but " + tc->Current() + " given",10);
 		return false;
 	}
 	tc->Skip();
@@ -261,7 +266,7 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 		}
 	}
 	if (tc->Current() != ")") {
-		Error("bad token ')' needed but " + tc->Current() + " given");
+		Error("bad token ')' needed but " + tc->Current() + " given",11);
 		return false;
 	}
 	//tc->Skip();
@@ -276,7 +281,7 @@ bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
 			return GetFunction(tc, obj, t_fun);
 		}
 		else {
-			Error("varible type missed, " + type + " expected but " + t_fun->f_return.Type + " is here (from function - "+t_fun->f_name+")");
+			Error("varible type missed, " + type + " expected but " + t_fun->f_return.Type + " is here (from function - "+t_fun->f_name+")",12);
 			return false;
 		}
 	}
@@ -289,7 +294,7 @@ bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
 			return true;
 		}
 		else {
-			Error("varible type missed, " + type + " expected but " + t_var->Type + " is here");
+			Error("varible type missed, " + type + " expected but " + t_var->Type + " is here",13);
 			return false;
 		}
 	}
@@ -307,7 +312,7 @@ bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
 				return true;
 			}
 			else {
-				Error("unknown varible '"+ g_varible +"' - '"+type+"' expected");
+				Error("unknown varible '"+ g_varible +"' type '"+type+"' expected",14);
 				return false;
 			}
 		}
@@ -320,8 +325,15 @@ inline bool file_exists(const std::string& name) {
 }
 
 const int VERSION_MAIN = 1;
-const int VERSION_SUB = 5;
-
+const int VERSION_SUB = 51;
+/*
+int exit_error() {
+	int a = 0;
+	return 10 / a;
+}
+#undef EXIT_FAILURE
+#define EXIT_FAILURE exit_error();
+*/
 
 int main(int argc, char** argv) {
 	std::cout << "ArtCore Compiler " << VERSION_MAIN << "." << VERSION_SUB << std::endl;
@@ -349,8 +361,10 @@ int main(int argc, char** argv) {
 		if (mode == "-debug") {
 			output = "D:\\projekt\\object_compile.acp";
 			fWrapper::AddLib("D:\\projekt\\AScript.lib");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\final_test_project\\object\\instance_w_sprite\\main.asc");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\final_test_project\\object\\instance_w_texture\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_player\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_bullet\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy_bullet\\main.asc");
 			atLeastOneLibIsLoaded = true;
 			atLeastOneObjectisLoaded = true;
 			atLestOutputIsLoaded = true;
@@ -478,19 +492,19 @@ int main(int argc, char** argv) {
 							objName = tc.Next();
 						}
 						else {
-							Error("bad token - '(' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+							Error("bad token - '(' need but '" + tc.Current() + "'",16); return EXIT_FAILURE;
 						}
 						Object* ref = oWrapper::GetObjectByName(objName);
 						if (ref == nullptr) {
-							Error("object not found - '" + objName + "'"); return EXIT_FAILURE;
+							Error("object not found - '" + objName + "'",17); return EXIT_FAILURE;
 						}
-						if (tc.Next() != ")") Error("bad token - ')' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
-						if (tc.Next() == ".") Error("bad token - '.' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+						if (tc.Next() != ")") { Error("bad token - ')' need but '" + tc.Current() + "'",18); return EXIT_FAILURE; }
+						if (tc.Next() != ".") { Error("bad token - '.' need but '" + tc.Current() + "'",19); return EXIT_FAILURE; }
 
 						std::string searched_varible = tc.Next();
 						varible* var = ref->FindLocal(searched_varible);
 
-						if (var == nullptr) Error("varible '" + searched_varible + "' not found in '" + objName + "' object"); return EXIT_FAILURE;
+						if (var == nullptr) { Error("varible '" + searched_varible + "' not found in '" + objName + "' object",20); return EXIT_FAILURE; }
 
 						WriteCommand(Command::OTHER);
 						// instance type
@@ -498,8 +512,11 @@ int main(int argc, char** argv) {
 						// varible type + index
 						WriteValue(var->Type, var->index);
 						
-						if(!isValidOperator(tc.Next())) Error("operator expected but  '" + tc.Current() + "' found"); return EXIT_FAILURE;
+						if (!isValidOperator(tc.Next())) { Error("operator expected but  '" + tc.Current() + "' found",21); return EXIT_FAILURE; }
 						WriteBit(getOperatorIndex(tc.Current()));
+
+						// skip operator
+						tc.Skip();
 
 						GetValues(&tc, obj, var->Type);
 						continue;
@@ -516,11 +533,13 @@ int main(int argc, char** argv) {
 							WriteBit(getOperatorIndex(tc.Current()));
 							WriteValue(var->Type, var->index);
 							tc.Skip();
-							GetValues(&tc, obj, var->Type);
+							if (!GetValues(&tc, obj, var->Type)) {
+								return EXIT_FAILURE;
+							}
 							continue;
 						}
 						else {
-							Error("bad token");
+							Error("bad operator '"+ tc.Current() +"'",28);
 							return EXIT_FAILURE;
 						}
 					}
@@ -540,7 +559,7 @@ int main(int argc, char** argv) {
 					if (token == "if") {
 						WriteCommand(Command::IF_TEST);
 						if (tc.Next() != "("){
-							Error("bad token '(' needed but " + tc.Current() + " given");
+							Error("bad token '(' needed but " + tc.Current() + " given",22);
 							return EXIT_FAILURE;
 						}
 						//tc.Skip();
@@ -556,14 +575,16 @@ int main(int argc, char** argv) {
 										objName = tc.Next();
 									}
 									else {
-										Error("bad token - '(' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+										Error("bad token - '(' need but '" + tc.Current() + "'",23); return EXIT_FAILURE;
 									}
 									Object* ref = oWrapper::GetObjectByName(objName);
 									if (ref == nullptr) {
-										Error("object not found - '" + objName + "'"); return EXIT_FAILURE;
+										Error("object not found - '" + objName + "'",24); return EXIT_FAILURE;
 									}
-									if (tc.Next() != ")") Error("bad token - ')' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
-									if (tc.Next() == ".") Error("bad token - '.' need but '" + tc.Current() + "'"); return EXIT_FAILURE;
+									if (tc.Next() != ")") { 
+										Error("bad token - ')' need but '" + tc.Current() + "'", 25); return EXIT_FAILURE; }
+									if (tc.Next() != ".") { 
+										Error("bad token - '.' need but '" + tc.Current() + "'", 26); return EXIT_FAILURE; }
 
 									std::string searched_varible = tc.Next();
 									varible* var = ref->FindLocal(searched_varible);
@@ -571,9 +592,11 @@ int main(int argc, char** argv) {
 										WriteCommand(Command::OTHER);
 										WriteBit(ref->CodeId);
 										WriteValue(var->Type, var->index);
+										comp_type = var->Type;
+										token = tc.Next();
 									}
 									else {
-										Error("varible '" + searched_varible + "' not found in '" + objName + "' object"); return EXIT_FAILURE;
+										Error("varible '" + searched_varible + "' not found in '" + objName + "' object",27); return EXIT_FAILURE;
 									}
 								}
 							}
@@ -599,12 +622,12 @@ int main(int argc, char** argv) {
 							{
 								if (isValidOperator2(token)) {
 									if (have_operator) {
-										Error("Bad operator, seccond given");
+										Error("Bad operator, seccond given",30);
 										return EXIT_FAILURE;
 									}
 
 									if ((std::find(ExcludeFromCompare.begin(), ExcludeFromCompare.end(), comp_type) != ExcludeFromCompare.end())) {
-										Error("value type: '" + comp_type + "' cannot be compare");
+										Error("value type: '" + comp_type + "' cannot be compare",29);
 										return EXIT_FAILURE;
 									}
 
@@ -616,7 +639,7 @@ int main(int argc, char** argv) {
 							}
 							{
 								if (comp_type == "undefined") {
-									Error("Compilation error, first type to compare must be function or varible");
+									Error("Compilation error, first type to compare must be function or varible",31);
 									return EXIT_FAILURE;
 								}
 								if (TryToParse(token, comp_type)) {
@@ -626,14 +649,14 @@ int main(int argc, char** argv) {
 									continue;
 								}
 								else {
-									Error("Wrong type to compare as seeccond");
+									Error("Wrong type to compare as seeccond",32);
 									return EXIT_FAILURE;
 								}
 							}
-							Error("Unexpected token " + token);
+							Error("Unexpected token " + token,34);
 						}
 						if (tc.Next() != ")") {
-							Error("bad token ')' needed but " + tc.Current() + " given");
+							Error("bad token ')' needed but " + tc.Current() + " given",33);
 							return EXIT_FAILURE;
 						}
 						WriteCommand(Command::IF_BODY);
@@ -642,13 +665,13 @@ int main(int argc, char** argv) {
 					}
 					if (token == "end") {
 						if (!tc.ExitScope()) {
-							Error("unexpected 'end'");
+							Error("unexpected 'end'",35);
 							return EXIT_FAILURE;
 						}
 						continue;
 					}
 				}
-				Error("Unexpected token " + token);
+				Error("Unexpected token " + token,36);
 			}
 			WriteCommand(Command::END);
 			tc.ExitScope();

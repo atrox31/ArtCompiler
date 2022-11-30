@@ -7,7 +7,7 @@ Object::Object() {
 }
 void Object::SetLocal(std::string name, std::string type, bool readonly) {
 	if (FindLocal(name) != nullptr) {
-		Error("Varible '" + name + "' exists in this object");
+		Error("Varible '" + name + "' exists in this object", 1);
 		return;
 	}
 	_locals.push_back(varible(name, type, readonly));
