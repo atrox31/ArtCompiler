@@ -332,7 +332,7 @@ inline bool file_exists(const std::string& name) {
 }
 
 const int VERSION_MAIN = 1;
-const int VERSION_SUB = 51;
+const int VERSION_SUB = 52;
 /*
 int exit_error() {
 	int a = 0;
@@ -354,7 +354,15 @@ int main(int argc, char** argv) {
 	if (argc < 2) {
 		std::cout << "more args is needed" << std::endl;
 		//return EXIT_FAILURE;
-
+		output = "D:\\projekt\\object_compile.acp";
+		fWrapper::AddLib("D:\\projekt\\AScript.lib");
+		oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_player\\main.asc");
+		oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_bullet\\main.asc");
+		oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy\\main.asc");
+		oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy_bullet\\main.asc");
+		atLeastOneLibIsLoaded = true;
+		atLeastOneObjectisLoaded = true;
+		atLestOutputIsLoaded = true;
 	}
 
 	for (int i = 1; i < argc; i++) {
@@ -365,12 +373,12 @@ int main(int argc, char** argv) {
 		if (mode == "-version") {
 			std::cout << VERSION_MAIN << "." << VERSION_SUB << std::endl;
 		}
-		if (mode == "-debug") {
+		if (mode == "-debug" ) {
 			output = "D:\\projekt\\object_compile.acp";
 			fWrapper::AddLib("D:\\projekt\\AScript.lib");
 			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_player\\main.asc");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy\\main.asc");
 			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_bullet\\main.asc");
+			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy\\main.asc");
 			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy_bullet\\main.asc");
 			atLeastOneLibIsLoaded = true;
 			atLeastOneObjectisLoaded = true;

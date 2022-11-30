@@ -55,18 +55,23 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 	bool is_quote = false;
 
 	for (int i = 0; i < line.length(); i++) {
+		const char p_char = line[ (i > 0 ? i - 1 : 0) ];
+		const char c_char = line[i];
+		const char n_char = line[(i < line.length()-1 ? i + 1 : line.length()-1)];
+
+
 		if (SkipSemicolon) {
-			if (line[i] == ';') {
+			if (c_char == ';') {
 				i = (int)line.length();
 				continue;
 			}
 		}
 		// string z aktualnego znaku
-		std::string lineS (1, line[i]);
+		std::string lineS (1, c_char);
 		// spacje i taby
-		if (line[i] == ' ' || line[i] == '\t') {
+		if (c_char == ' ' || c_char == '\t') {
 			if (is_quote) {
-				c_token += line[i];
+				c_token += c_char;
 				continue;
 			}
 			else {
@@ -78,10 +83,10 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 
 		}// liczbowe
 		else if (
-			//(i > 0 && (line[i - 1] == ' ' && ((line[i] >= '0' && line[i] <= '9') || (line[i] == '-') && (line[i] >= '0' && line[i] <= '9')) ))) {
-			(i > 0 && (	(line[i - 1] == ' ' || c_token == "") && ((line[i] >= '0' && line[i] <= '9') || (line[i] == '-') && (line[i] >= '0' && line[i] <= '9')) ))) {
+			//(i > 0 && (line[i - 1] == ' ' && ((c_char >= '0' && c_char <= '9') || (c_char == '-') && (c_char >= '0' && c_char <= '9')) ))) {
+			(i > 0 && (	( p_char == ' ' || c_token == "") && ((c_char >= '0' && c_char <= '9') || (c_char == '-') && (c_char >= '0' && c_char <= '9')) ))) {
 			std::string number = "";
-			number += line[i];
+			number += c_char;
 			while (true && i+1 < line.length()) {
 				char next_char = line[i + 1];
 				if (next_char >= '0' && next_char <= '9' || next_char == 'f' || next_char == '.' ) {
@@ -90,17 +95,20 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 					if (next_char == 'f') break;
 				}
 				else {
+					if (next_char == ':') {
+						number += next_char;
+					}
 					break;
 				}
 			}
 			tokens.push_back(number);
 		}// apostrofy do stringów
-		else if (line[i] == '\"') {
+		else if (c_char == '\"') {
 			is_quote = !is_quote;
 		}// funkcyjne
-		else if (line[i] == '.' || line[i] == ',' || line[i] == '(' || line[i] == ')' || line[i] == '[' || line[i] == ']') {
+		else if (c_char == '.' || c_char == ',' || c_char == '(' || c_char == ')' || c_char == '[' || c_char == ']') {
 			if (is_quote) {
-				c_token += line[i];
+				c_token += c_char;
 				continue;
 			}
 			if (c_token.length() > 0) {
@@ -111,7 +119,7 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 		}// matematyczne
 		else if (isValidOperator(lineS)) {
 			if (is_quote) {
-				c_token += line[i];
+				c_token += c_char;
 				continue;
 			}
 			if (c_token.length() > 0) {
@@ -121,10 +129,10 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 			tokens.push_back(lineS);
 		}// logiczne
 		else {
-			std::string t_tk = "" + line[i] + line[i + 1];
+			std::string t_tk = "" + c_char + line[i + 1];
 			if (isValidOperator2(t_tk)) {
 				if (is_quote) {
-					c_token += line[i];
+					c_token += c_char;
 					continue;
 				}
 				if (c_token.length() > 0) {
@@ -136,7 +144,7 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 				i++;
 			}
 			else {
-				c_token += line[i];
+				c_token += c_char;
 				if (i == line.length() - 1) {
 					tokens.push_back(c_token);
 				}
