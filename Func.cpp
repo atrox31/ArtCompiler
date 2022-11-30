@@ -78,7 +78,8 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 
 		}// liczbowe
 		else if (
-			(i > 0 && (line[i - 1] == ' ' && ((line[i] >= '0' && line[i] <= '9') || (line[i] == '-') && (line[i] >= '0' && line[i] <= '9')) ))) {
+			//(i > 0 && (line[i - 1] == ' ' && ((line[i] >= '0' && line[i] <= '9') || (line[i] == '-') && (line[i] >= '0' && line[i] <= '9')) ))) {
+			(i > 0 && (	(line[i - 1] == ' ' || c_token == "") && ((line[i] >= '0' && line[i] <= '9') || (line[i] == '-') && (line[i] >= '0' && line[i] <= '9')) ))) {
 			std::string number = "";
 			number += line[i];
 			while (true && i+1 < line.length()) {
