@@ -320,7 +320,7 @@ inline bool file_exists(const std::string& name) {
 }
 
 const int VERSION_MAIN = 1;
-const int VERSION_SUB = 4;
+const int VERSION_SUB = 5;
 
 
 int main(int argc, char** argv) {
@@ -431,6 +431,17 @@ int main(int argc, char** argv) {
 	}
 	WriteCommand(Command::END);
 	*/
+
+	// first bajt
+	WriteBit('A');
+	WriteBit('C');
+	WriteBit(VERSION_MAIN);
+	WriteBit(VERSION_SUB);
+	// unused
+	WriteBit('\0');
+	WriteBit('\0');
+	WriteBit('\0');
+	WriteBit('\0');
 
 	for (Object* obj : oWrapper::GetObjects()) {
 		WriteCommand(Command::OBJECT_DEFINITION);
