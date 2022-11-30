@@ -478,22 +478,31 @@ int main(int argc, char** argv) {
 
 						std::string searched_varible = tc.Next();
 						varible* var = ref->FindLocal(searched_varible);
-						if (var != nullptr) {
-							WriteCommand(Command::OTHER);
-							WriteBit(ref->CodeId);
-							WriteValue(var->Type, var->index);
-						}
-						else {
-							Error("varible '"+searched_varible + "' not found in '" + objName + "' object"); return EXIT_FAILURE;
-						}
+
+						if (var == nullptr) Error("varible '" + searched_varible + "' not found in '" + objName + "' object"); return EXIT_FAILURE;
+
+						WriteCommand(Command::OTHER);
+						// instance type
+						WriteBit(ref->CodeId);
+						// varible type + index
+						WriteValue(var->Type, var->index);
+						
+						if(!isValidOperator(tc.Next())) Error("operator expected but  '" + tc.Current() + "' found"); return EXIT_FAILURE;
+						WriteBit(getOperatorIndex(tc.Current()));
+
+						GetValues(&tc, obj, var->Type);
+						continue;
+
 					}
+					
 				}
 				// zmienna
 				{
 					varible* var = obj->FindLocal(token);
 					if (var != nullptr) {
-						if (tc.Next() == "=") { // zmiana zmiennej
+						if (isValidOperator(tc.Next())) { // zmiana zmiennej
 							WriteCommand(Command::SET);
+							WriteBit(getOperatorIndex(tc.Current()));
 							WriteValue(var->Type, var->index);
 							tc.Skip();
 							GetValues(&tc, obj, var->Type);
