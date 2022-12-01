@@ -21,6 +21,10 @@
 #include "Object.h"
 #include "oWrapper.h"
 
+const int VERSION_MAIN = 1;
+const int VERSION_SUB = 6;
+const int VERSION_PATH = 0;
+
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
 int cLine = 0;
@@ -331,8 +335,6 @@ inline bool file_exists(const std::string& name) {
 	return f.good();
 }
 
-const int VERSION_MAIN = 1;
-const int VERSION_SUB = 52;
 /*
 int exit_error() {
 	int a = 0;
@@ -362,7 +364,7 @@ int main(int argc, char** argv) {
 			mode = mode.substr(0, mode.length() - 2);
 		}
 		if (mode == "-version") {
-			std::cout << VERSION_MAIN << "." << VERSION_SUB << std::endl;
+			std::cout << VERSION_MAIN << '.' << VERSION_SUB << '.' << VERSION_PATH << std::endl;
 		}
 		if (mode == "-debug" ) {
 			output = "D:\\projekt\\object_compile.acp";
@@ -457,8 +459,8 @@ int main(int argc, char** argv) {
 	WriteBit('C');
 	WriteBit(VERSION_MAIN);
 	WriteBit(VERSION_SUB);
+	WriteBit(VERSION_PATH);
 	// unused
-	WriteBit('\0');
 	WriteBit('\0');
 	WriteBit('\0');
 	WriteBit('\0');
