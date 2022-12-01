@@ -1,5 +1,5 @@
 # ACompiler
-ArtScript is C like language. Have normal operators and types. You can write code in ArtEditor as normal code or click in CodeEditor.
+ArtScript is C/pascal like language. Have operators and types. You can write code in ArtEditor as normal code or click in CodeEditor.
 ## Usage
 ACompiler.exe -lib C:\\AScript.lib -obj C:\\object_definition1.asc  -obj C:\\object_definition2.asc -output C:\\compile.acp
 * -lib path to libray with functions
@@ -7,13 +7,26 @@ ACompiler.exe -lib C:\\AScript.lib -obj C:\\object_definition1.asc  -obj C:\\obj
 * -output compiler object output
 
 # ArtCode
-## Syntax
+## Operators
+### Math
++= -= *= /=
+### Assign
+:=
+### Compare
+|| && << >> >= <= != ==
 
-    int a = 10
-    point p = NewPoint(10, 20)
-    function object_name:Event_name
-    ...
+## Functions
+    function <object_name>:<event>
+    	...
     @end
+## Conditions (for now there is no else)
+    if( condition )
+    	...
+    end
+    
+    if( value/function/varible == varible )
+    	...
+    end
 
 ## Types
 "null", "int", "float", "bool", "instance", "object", "sprite", "texture", "sound", "music", "font", "point", "rectangle", "color", "string"
