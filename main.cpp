@@ -655,7 +655,7 @@ int main(int argc, char** argv) {
 								if (TryToParse(token2, comp_type)) {
 									WriteCommand(Command::VALUE);
 									WriteBit(getVaribleIndex(comp_type));
-									WriteString(token);
+									WriteString(token2);
 									continue;
 								}
 								else {
@@ -670,8 +670,8 @@ int main(int argc, char** argv) {
 							return EXIT_FAILURE;
 						}
 						WriteCommand(Command::IF_BODY);
-						tc.EnterNextScope();
 						WriteBit(getVaribleIndex(comp_type));
+						tc.EnterNextScope();
 						continue;
 					}
 					if (token == "end") {
