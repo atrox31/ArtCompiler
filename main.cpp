@@ -671,6 +671,7 @@ int main(int argc, char** argv) {
 						}
 						WriteCommand(Command::IF_BODY);
 						tc.EnterNextScope();
+						WriteBit(getVaribleIndex(comp_type));
 						continue;
 					}
 					if (token == "end") {
