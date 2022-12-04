@@ -104,6 +104,7 @@ std::vector<std::string> MakeTokens(std::string& line, bool SkipSemicolon) {
 			tokens.push_back(number);
 		}// apostrofy do stringów
 		else if (c_char == '\"') {
+			c_token += c_char;
 			is_quote = !is_quote;
 		}// funkcyjne
 		else if (c_char == '.' || c_char == ',' || c_char == '(' || c_char == ')' || c_char == '[' || c_char == ']') {

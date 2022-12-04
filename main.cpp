@@ -23,7 +23,7 @@
 
 const int VERSION_MAIN = 1;
 const int VERSION_SUB = 6;
-const int VERSION_PATH = 0;
+const int VERSION_PATH = 1;
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
@@ -129,6 +129,7 @@ bool TryToParse(std::string value, std::string type) {
 void WriteString(std::string text) {
 	if (text.length() == 0) return;
 	for (int i = 0; i < text.length(); i++) {
+		if((unsigned char)text[i] != '\"')
 		OutputCode.push_back((unsigned char)text[i]);
 	}
 	OutputCode.push_back('\1');
