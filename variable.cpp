@@ -1,13 +1,13 @@
-#include "varible.h"
+#include "variable.h"
 
-varible::varible(std::string name, std::string type, bool readonly) {
+variable::variable(std::string name, std::string type, bool readonly) {
 	this->Name = name;
 	this->Type = type;
 	this->ReadOnly = readonly;
 	this->index = -1;
 }
 
-varible::varible(varible& var, int index)
+variable::variable(variable& var, int index)
 {
 	this->Name = var.Name;
 	this->Type = var.Type;
@@ -15,7 +15,7 @@ varible::varible(varible& var, int index)
 	this->index = index;
 }
 
-varible::varible()
+variable::variable()
 {
 	this->Name = "undefined";
 	this->Type = "undefined";

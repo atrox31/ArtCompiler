@@ -11,15 +11,15 @@
 #include <streambuf>
 #include<algorithm>
 
-#include "varible.h"
+#include "variable.h"
 
 class function {
 public:
 	std::string f_name;
-	varible f_return;
-	std::vector<varible> f_arguments;
+	variable f_return;
+	std::vector<variable> f_arguments;
 	int index;
-	function(std::string f_name, varible f_return, std::vector<varible> f_arguments, int index) {
+	function(std::string f_name, variable f_return, std::vector<variable> f_arguments, int index) {
 		this->f_name = f_name;
 		this->f_return = f_return;
 		this->f_arguments = f_arguments;

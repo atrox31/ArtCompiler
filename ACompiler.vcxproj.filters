@@ -21,7 +21,7 @@
     <ClCompile Include="Func.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="varible.cpp">
+    <ClCompile Include="variable.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="function.cpp">
@@ -47,7 +47,7 @@
     <ClInclude Include="Func.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="varible.h">
+    <ClInclude Include="variable.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="function.h">

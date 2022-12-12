@@ -39,7 +39,7 @@ const std::string operators2[] = {
 bool isValidOperator2(std::string type);
 short int getOperator2Index(std::string type);
 
-const std::string varible_type[] = {
+const std::string variable_type[] = {
 "invalid",
 "null",
 "int",
@@ -55,10 +55,11 @@ const std::string varible_type[] = {
 "point",
 "rectangle",
 "color",
-"string"
+"string",
+"enum"
 };
-bool isValidVarible(std::string type);
-short int getVaribleIndex(std::string type);
+bool isValidVariable(std::string type);
+short int getVariableIndex(std::string type);
 
 const std::string keywords[] = {
 "set",

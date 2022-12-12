@@ -45,12 +45,12 @@ enum class Command {
 	// definicje
 	OBJECT_DEFINITION,
 	FUNCTION_DEFINITION,
-	LOCAL_VARIBLE_DEFINITION,
+	LOCAL_variable_DEFINITION,
 	TYPEDEF,
 	// odwo³ania
 	OBJECT,
-	OBJECT_VARIBLE,
-	LOCAL_VARIBLE,
+	OBJECT_variable,
+	LOCAL_variable,
 	VALUE,NULL_VALUE,
 	FUNCTION,OTHER,
 	// operatory
@@ -145,7 +145,7 @@ void WriteCommand(Command value) {
 
 void WriteValue(std::string type, short int value) {
 	if (type.length() == 0) return;
-	short int _type = getVaribleIndex(type);
+	short int _type = getVariableIndex(type);
 	OutputCode.push_back((unsigned char)_type);
 	OutputCode.push_back((unsigned char)value);
 }
@@ -282,49 +282,49 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 }
 
 bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
-	std::string g_varible = tc->Current();
-	function* t_fun = fWrapper::GetFunction(g_varible);
+	std::string g_variable = tc->Current();
+	function* t_fun = fWrapper::GetFunction(g_variable);
 	if (t_fun != nullptr) {
 		if (t_fun->f_return.Type == type) {
 			return GetFunction(tc, obj, t_fun);
 		}
 		else {
-			Error("varible type missed, " + type + " expected but " + t_fun->f_return.Type + " is here (from function - "+t_fun->f_name+")",12);
+			Error("variable type missed, " + type + " expected but " + t_fun->f_return.Type + " is here (from function - "+t_fun->f_name+")",12);
 			return false;
 		}
 	}
-	varible* t_var = obj->FindLocal(g_varible);
+	variable* t_var = obj->FindLocal(g_variable);
 	if (t_var != nullptr) { // zmienna
 		if (t_var->Type == type) {
-			WriteCommand(Command::LOCAL_VARIBLE);
-			//WriteBit(getVaribleIndex(t_var->Type));
+			WriteCommand(Command::LOCAL_variable);
+			//WriteBit(getVariableIndex(t_var->Type));
 			WriteValue(t_var->Type, t_var->index);
 			return true;
 		}
 		else {
-			Error("varible type missed, " + type + " expected but " + t_var->Type + " is here",13);
+			Error("variable type missed, " + type + " expected but " + t_var->Type + " is here",13);
 			return false;
 		}
 	}
 	else {
 		// wartoœæ
-		if (g_varible == "null") {
+		if (g_variable == "null") {
 			WriteCommand(Command::NULL_VALUE);
 			return true;
 		}
 		else {
-			std::string token2 = g_varible;
+			std::string token2 = g_variable;
 			if (type == "point") {
 				token2 += tc->Next();
 			}
 			if (TryToParse(token2, type)) {
 				WriteCommand(Command::VALUE);
-				WriteBit(getVaribleIndex(type));
-				WriteString(g_varible);
+				WriteBit(getVariableIndex(type));
+				WriteString(g_variable);
 				return true;
 			}
 			else {
-				Error("unknown varible '"+ g_varible +"' type '"+type+"' expected",14);
+				Error("unknown variable '"+ g_variable +"' type '"+type+"' expected",14);
 				return false;
 			}
 		}
@@ -449,8 +449,8 @@ int main(int argc, char** argv) {
 	// compiller
 	/*
 	WriteCommand(Command::TYPEDEF);
-	for (int i = 0; i < ARRAY_SIZE(varible_type); i++) {
-		WriteString(varible_type[i]);
+	for (int i = 0; i < ARRAY_SIZE(variable_type); i++) {
+		WriteString(variable_type[i]);
 	}
 	WriteCommand(Command::END);
 	*/
@@ -469,9 +469,9 @@ int main(int argc, char** argv) {
 	for (Object* obj : oWrapper::GetObjects()) {
 		WriteCommand(Command::OBJECT_DEFINITION);
 		WriteString(obj->Name);
-		for (varible& local : obj->GetLocals()) {
-			WriteCommand(Command::LOCAL_VARIBLE_DEFINITION);
-			WriteBit(getVaribleIndex(local.Type));
+		for (variable& local : obj->GetLocals()) {
+			WriteCommand(Command::LOCAL_variable_DEFINITION);
+			WriteBit(getVariableIndex(local.Type));
 			WriteBit(local.index);
 			WriteString(local.Name);
 			WriteBit(local.ReadOnly);
@@ -510,15 +510,15 @@ int main(int argc, char** argv) {
 						if (tc.Next() != ")") { Error("bad token - ')' need but '" + tc.Current() + "'",18); return EXIT_FAILURE; }
 						if (tc.Next() != ".") { Error("bad token - '.' need but '" + tc.Current() + "'",19); return EXIT_FAILURE; }
 
-						std::string searched_varible = tc.Next();
-						varible* var = ref->FindLocal(searched_varible);
+						std::string searched_variable = tc.Next();
+						variable* var = ref->FindLocal(searched_variable);
 
-						if (var == nullptr) { Error("varible '" + searched_varible + "' not found in '" + objName + "' object",20); return EXIT_FAILURE; }
+						if (var == nullptr) { Error("variable '" + searched_variable + "' not found in '" + objName + "' object",20); return EXIT_FAILURE; }
 
 						WriteCommand(Command::OTHER);
 						// instance type
 						WriteBit(ref->CodeId);
-						// varible type + index
+						// variable type + index
 						WriteValue(var->Type, var->index);
 						
 						if (!isValidOperator(tc.Next())) { Error("operator expected but  '" + tc.Current() + "' found",21); return EXIT_FAILURE; }
@@ -535,7 +535,7 @@ int main(int argc, char** argv) {
 				}
 				// zmienna
 				{
-					varible* var = obj->FindLocal(token);
+					variable* var = obj->FindLocal(token);
 					if (var != nullptr) {
 						if (isValidOperator(tc.Next())) { // zmiana zmiennej
 							WriteCommand(Command::SET);
@@ -595,8 +595,8 @@ int main(int argc, char** argv) {
 									if (tc.Next() != ".") { 
 										Error("bad token - '.' need but '" + tc.Current() + "'", 26); return EXIT_FAILURE; }
 
-									std::string searched_varible = tc.Next();
-									varible* var = ref->FindLocal(searched_varible);
+									std::string searched_variable = tc.Next();
+									variable* var = ref->FindLocal(searched_variable);
 									if (var != nullptr) {
 										WriteCommand(Command::OTHER);
 										WriteBit(ref->CodeId);
@@ -605,14 +605,14 @@ int main(int argc, char** argv) {
 										token = tc.Next();
 									}
 									else {
-										Error("varible '" + searched_varible + "' not found in '" + objName + "' object",27); return EXIT_FAILURE;
+										Error("variable '" + searched_variable + "' not found in '" + objName + "' object",27); return EXIT_FAILURE;
 									}
 								}
 							}
 							{
-								varible* var = obj->FindLocal(token);
+								variable* var = obj->FindLocal(token);
 								if (var != nullptr) {
-									WriteCommand(Command::LOCAL_VARIBLE);
+									WriteCommand(Command::LOCAL_variable);
 									WriteValue(var->Type, var->index);
 									comp_type = var->Type;
 									continue;
@@ -648,7 +648,7 @@ int main(int argc, char** argv) {
 							}
 							{
 								if (comp_type == "undefined") {
-									Error("Compilation error, first type to compare must be function or varible", 31);
+									Error("Compilation error, first type to compare must be function or variable", 31);
 									return EXIT_FAILURE;
 								}
 								std::string token2 = token;
@@ -657,7 +657,7 @@ int main(int argc, char** argv) {
 								}
 								if (TryToParse(token2, comp_type)) {
 									WriteCommand(Command::VALUE);
-									WriteBit(getVaribleIndex(comp_type));
+									WriteBit(getVariableIndex(comp_type));
 									WriteString(token2);
 									continue;
 								}
@@ -673,7 +673,7 @@ int main(int argc, char** argv) {
 							return EXIT_FAILURE;
 						}
 						WriteCommand(Command::IF_BODY);
-						WriteBit(getVaribleIndex(comp_type));
+						WriteBit(getVariableIndex(comp_type));
 						tc.EnterNextScope();
 						continue;
 					}

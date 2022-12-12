@@ -20,13 +20,13 @@ short int getOperator2Index(std::string type)
 	for (short int i = 0; i < ARRAY_SIZE(operators2); i++) if (type == operators2[i]) return i;
 	return -1;
 }
-bool isValidVarible(std::string type) {
-	for (int i = 0; i < ARRAY_SIZE(varible_type); i++) if (boost::algorithm::to_lower_copy(type) == varible_type[i]) return true;
+bool isValidVariable(std::string type) {
+	for (int i = 0; i < ARRAY_SIZE(variable_type); i++) if (boost::algorithm::to_lower_copy(type) == variable_type[i]) return true;
 	return false;
 }
-short int getVaribleIndex(std::string type)
+short int getVariableIndex(std::string type)
 {
-	for (short int i = 0; i < ARRAY_SIZE(varible_type); i++) if (boost::algorithm::to_lower_copy(type) == varible_type[i]) return i;
+	for (short int i = 0; i < ARRAY_SIZE(variable_type); i++) if (boost::algorithm::to_lower_copy(type) == variable_type[i]) return i;
 	return -1;
 }
 bool isValidKeyword(std::string type) {

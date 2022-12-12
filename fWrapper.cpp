@@ -28,10 +28,10 @@ bool fWrapper::AddLib(std::string LibName) {
 		if (tokens.size() >= 4) {
 			//point new_point(float x,float y)
 			std::string f_name = tokens[1];
-			varible f_return;
-			std::vector<varible> f_argumens = std::vector<varible>();
+			variable f_return;
+			std::vector<variable> f_argumens = std::vector<variable>();
 
-			if (isValidVarible(tokens[0])) {
+			if (isValidVariable(tokens[0])) {
 				f_return.Name = "return";
 				f_return.Type = tokens[0];
 				f_return.ReadOnly = false;
@@ -40,7 +40,7 @@ bool fWrapper::AddLib(std::string LibName) {
 			if (tokens.size() > 4) {
 				for (int i = 3; i < tokens.size() - 1; i += 3) {
 					if (i + 1 < (int)tokens.size()) {
-						f_argumens.push_back(varible(tokens[i + 1], tokens[i], true));
+						f_argumens.push_back(variable(tokens[i + 1], tokens[i], true));
 					}
 				}
 			}

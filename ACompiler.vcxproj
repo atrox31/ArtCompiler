@@ -155,7 +155,7 @@
     <ClCompile Include="Members.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="oWrapper.cpp" />
-    <ClCompile Include="varible.cpp" />
+    <ClCompile Include="variable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Func.h" />
@@ -165,7 +165,7 @@
     <ClInclude Include="Members.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="oWrapper.h" />
-    <ClInclude Include="varible.h" />
+    <ClInclude Include="variable.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
