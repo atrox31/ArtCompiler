@@ -1,36 +1,26 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <unordered_map>
 #include <fstream>
-#include <math.h>
-#include <sstream>
 #include <iomanip>
-#include <codecvt>
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <streambuf>
 #include<algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include "main.h"
 #include "Members.h"
 #include "Func.h"
 #include "fWrapper.h"
 #include "Object.h"
 #include "oWrapper.h"
 
-const int VERSION_MAIN = 1;
-const int VERSION_SUB = 6;
-const int VERSION_PATH = 1;
-
-#define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
-
-int cLine = 0;
-std::string cFunc = "none";
-std::string cObject = "none";
-std::string cLineCode = "none";
+int c_line = 0;
+std::string c_func = "none";
+std::string c_object = "none";
+std::string c_line_code = "none";
 std::vector<unsigned char> OutputCode;
 
 #define ALLOW_0_LENGTH_STRING true
@@ -61,7 +51,7 @@ enum class Command {
 	END,
 };
 
-bool TryToParse(std::string value, std::string type) {
+bool TryToParse(std::string value, const std::string& type) {
 	if (value == "nul") {
 		return true;
 	}else
@@ -128,9 +118,10 @@ bool TryToParse(std::string value, std::string type) {
 
 void WriteString(std::string text) {
 	if (text.length() == 0) return;
-	for (int i = 0; i < text.length(); i++) {
-		if((unsigned char)text[i] != '\"')
-		OutputCode.push_back((unsigned char)text[i]);
+	for (char i : text)
+	{
+		if((unsigned char)i != '\"')
+		OutputCode.push_back((unsigned char)i);
 	}
 	OutputCode.push_back('\1');
 }
@@ -143,7 +134,7 @@ void WriteCommand(Command value) {
 	OutputCode.push_back((unsigned char)to_underlying(value));
 }
 
-void WriteValue(std::string type, short int value) {
+void WriteValue(const std::string& type, short int value) {
 	if (type.length() == 0) return;
 	short int _type = getVariableIndex(type);
 	OutputCode.push_back((unsigned char)_type);
@@ -252,7 +243,7 @@ public:
 	}
 };
 
-bool GetValues(TokenCompiller* tc, Object* obj, std::string type);
+bool GetValues(TokenCompiller* tc, Object* obj, const std::string& type);
 
 bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 	WriteCommand(Command::FUNCTION);
@@ -281,7 +272,7 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 	return true;
 }
 
-bool GetValues(TokenCompiller* tc, Object* obj, std::string type) {
+bool GetValues(TokenCompiller* tc, Object* obj, const std::string& type) {
 	std::string g_variable = tc->Current();
 	function* t_fun = fWrapper::GetFunction(g_variable);
 	if (t_fun != nullptr) {
@@ -349,7 +340,7 @@ int main(int argc, char** argv) {
 	std::cout << "ArtCore Compiler " << VERSION_MAIN << "." << VERSION_SUB << std::endl;
 	fWrapper::Init();
 	oWrapper::Init();
-	std::string output = "";
+	std::string output;
 	bool atLeastOneLibIsLoaded = false;
 	bool atLeastOneObjectisLoaded = false;
 	bool atLestOutputIsLoaded = false;
@@ -474,38 +465,37 @@ int main(int argc, char** argv) {
 			WriteBit(getVariableIndex(local.Type));
 			WriteBit(local.index);
 			WriteString(local.Name);
-			WriteBit(local.ReadOnly);
 		}
 		WriteCommand(Command::END);
 
 		for (auto& fun : obj->Functions) {
 			WriteCommand(Command::FUNCTION_DEFINITION);
 			WriteString(fun.first);
-			cObject = obj->Name;
-			cFunc = fun.first;
+			c_object = obj->Name;
+			c_func = fun.first;
 			TokenCompiller tc(fun.second);
 			tc.EnterNextScope();
 			while (!tc.IsEnd()) {
-				cLine = tc.GetLine();
-				cLineCode = tc.GetCode(cLine);
+				c_line = tc.GetLine();
+				c_line_code = tc.GetCode(c_line);
 				std::string token = tc.Next();
-				if (token == "") {
+				if (token.empty()) {
 					tc.Continue();
 					continue;
 				}
 				// other
 				{
 					if (token == "other") {
-						std::string objName = "";
+						std::string obj_name;
 						if (tc.Next() == "(") {
-							objName = tc.Next();
+							obj_name = tc.Next();
 						}
 						else {
 							Error("bad token - '(' need but '" + tc.Current() + "'",16); return EXIT_FAILURE;
 						}
-						Object* ref = oWrapper::GetObjectByName(objName);
+						Object* ref = oWrapper::GetObjectByName(obj_name);
 						if (ref == nullptr) {
-							Error("object not found - '" + objName + "'",17); return EXIT_FAILURE;
+							Error("object not found - '" + obj_name + "'",17); return EXIT_FAILURE;
 						}
 						if (tc.Next() != ")") { Error("bad token - ')' need but '" + tc.Current() + "'",18); return EXIT_FAILURE; }
 						if (tc.Next() != ".") { Error("bad token - '.' need but '" + tc.Current() + "'",19); return EXIT_FAILURE; }
@@ -513,7 +503,7 @@ int main(int argc, char** argv) {
 						std::string searched_variable = tc.Next();
 						variable* var = ref->FindLocal(searched_variable);
 
-						if (var == nullptr) { Error("variable '" + searched_variable + "' not found in '" + objName + "' object",20); return EXIT_FAILURE; }
+						if (var == nullptr) { Error("variable '" + searched_variable + "' not found in '" + obj_name + "' object",20); return EXIT_FAILURE; }
 
 						WriteCommand(Command::OTHER);
 						// instance type
@@ -533,11 +523,11 @@ int main(int argc, char** argv) {
 					}
 					
 				}
-				// zmienna
+				// variable
 				{
 					variable* var = obj->FindLocal(token);
 					if (var != nullptr) {
-						if (isValidOperator(tc.Next())) { // zmiana zmiennej
+						if (isValidOperator(tc.Next())) { // change variable
 							WriteCommand(Command::SET);
 							WriteBit(getOperatorIndex(tc.Current()));
 							WriteValue(var->Type, var->index);
@@ -553,7 +543,7 @@ int main(int argc, char** argv) {
 						}
 					}
 				}
-				// funkcja
+				// function
 				{
 					function* fun = fWrapper::GetFunction(token);
 					if (fun != nullptr) {
@@ -579,16 +569,16 @@ int main(int argc, char** argv) {
 							// other
 							{
 								if (token == "other") {
-									std::string objName = "";
+									std::string obj_name;
 									if (tc.Next() == "(") {
-										objName = tc.Next();
+										obj_name = tc.Next();
 									}
 									else {
 										Error("bad token - '(' need but '" + tc.Current() + "'",23); return EXIT_FAILURE;
 									}
-									Object* ref = oWrapper::GetObjectByName(objName);
+									Object* ref = oWrapper::GetObjectByName(obj_name);
 									if (ref == nullptr) {
-										Error("object not found - '" + objName + "'",24); return EXIT_FAILURE;
+										Error("object not found - '" + obj_name + "'",24); return EXIT_FAILURE;
 									}
 									if (tc.Next() != ")") { 
 										Error("bad token - ')' need but '" + tc.Current() + "'", 25); return EXIT_FAILURE; }
@@ -605,7 +595,7 @@ int main(int argc, char** argv) {
 										token = tc.Next();
 									}
 									else {
-										Error("variable '" + searched_variable + "' not found in '" + objName + "' object",27); return EXIT_FAILURE;
+										Error("variable '" + searched_variable + "' not found in '" + obj_name + "' object",27); return EXIT_FAILURE;
 									}
 								}
 							}

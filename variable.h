@@ -6,8 +6,7 @@ public:
 	std::string Name;
 	std::string Type;
 	int index;
-	bool ReadOnly;
-	variable(std::string name, std::string type, bool readonly = false);
+	variable(std::string name, std::string type);
 	variable(variable& var, int index);
 	variable();
 };

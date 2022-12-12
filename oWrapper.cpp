@@ -1,8 +1,13 @@
 #include "oWrapper.h"
 
-extern int cLine;
-extern std::string cFunc;
-extern std::string cObject;
+#include <fstream>
+#include <iostream>
+
+#include "Func.h"
+
+extern int c_line;
+extern std::string c_func;
+extern std::string c_object;
 
 oWrapper* oWrapper::_instance;
 std::vector<Object*> oWrapper::_obj;
@@ -18,10 +23,10 @@ oWrapper::oWrapper() {
 	oWrapper::_instance = this;
 }
 
-bool oWrapper::CreateObject(std::string file) {
-	cLine = -1;
-	cFunc = "init";
-	cObject = "undefined";
+bool oWrapper::CreateObject(const std::string& file) {
+	c_line = -1;
+	c_func = "init";
+	c_object = "undefined";
 
 	if (_instance == nullptr) return false;
 	std::ifstream t(file);
@@ -35,17 +40,17 @@ bool oWrapper::CreateObject(std::string file) {
 
 	bool object_definition = false;
 	bool function_definition = false;
-	std::string currentFunction = "";
+	std::string currentFunction;
 
 	Object* _new_object = new Object();
 	for (std::string line : objc) {
-		cLine++;
+		c_line++;
 		if (IsComment(line)) continue;
 		std::vector<std::string> tokens = MakeTokens(line);
 
 		if (tokens[0] == "object") {
 			_new_object->Name = tokens[1];
-			cObject = tokens[1];
+			c_object = tokens[1];
 			object_definition = true;
 			continue;
 		}
@@ -53,17 +58,10 @@ bool oWrapper::CreateObject(std::string file) {
 		if (object_definition) {
 
 			if (tokens[0] == "local") {
-				bool ro = (tokens[1] == "READ_ONLY");
 				std::string name, type;
-				if (ro) {
-					name = tokens[3];
-					type = tokens[2];
-				}
-				else {
-					name = tokens[2];
-					type = tokens[1];
-				}
-				_new_object->SetLocal(name, type, ro);
+				name = tokens[2];
+				type = tokens[1];
+				_new_object->SetLocal(name, type);
 				continue;
 			}
 
@@ -100,12 +98,12 @@ bool oWrapper::CreateObject(std::string file) {
 
 std::vector<Object*> oWrapper::GetObjects()
 {
-	return _instance->_obj;
+	return oWrapper::_obj;
 }
 
-Object* oWrapper::GetObjectByName(std::string name)
+Object* oWrapper::GetObjectByName(const std::string& name)
 {
-	for (auto& obj : _instance->_obj) {
+	for (const auto& obj : oWrapper::_obj) {
 		if (obj->Name == name) {
 			return obj;
 		}

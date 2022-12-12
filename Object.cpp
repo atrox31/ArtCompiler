@@ -5,22 +5,24 @@ Object::Object() {
 	_locals = std::vector<variable>();
 	 Functions = std::map<std::string, std::string>();
 }
-void Object::SetLocal(std::string name, std::string type, bool readonly) {
+void Object::SetLocal(const std::string& name, const std::string& type) {
 	if (FindLocal(name) != nullptr) {
 		Error("variable '" + name + "' exists in this object", 1);
 		return;
 	}
-	_locals.push_back(variable(name, type, readonly));
+	_locals.emplace_back(name, type);
 	int c = -1;
-	for (int i = 0; i < _locals.size(); i++) {
-		if (_locals[i].Type == type) c++;
+	for (auto& local : _locals)
+	{
+		if (local.Type == type) c++;
 	}
 	_locals.back().index = c;
 }
 
-variable* Object::FindLocal(std::string name) {
-	for (int i = 0; i < _locals.size(); i++) {
-		if (_locals[i].Name == name) return &_locals[i];
+variable* Object::FindLocal(const std::string& name) {
+	for (auto& local : _locals)
+	{
+		if (local.Name == name) return &local;
 	}
 	return nullptr;
 }

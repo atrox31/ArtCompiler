@@ -1,14 +1,8 @@
 #pragma once
-#include <unordered_map>
-#include <fstream>
-#include <math.h>
-#include <sstream>
 #include <iomanip>
 #include <codecvt>
-#include <iostream>
+#include <utility>
 #include <vector>
-#include <fstream>
-#include <streambuf>
 #include<algorithm>
 
 #include "variable.h"
@@ -20,9 +14,9 @@ public:
 	std::vector<variable> f_arguments;
 	int index;
 	function(std::string f_name, variable f_return, std::vector<variable> f_arguments, int index) {
-		this->f_name = f_name;
-		this->f_return = f_return;
-		this->f_arguments = f_arguments;
+		this->f_name = std::move(f_name);
+		this->f_return = std::move(f_return);
+		this->f_arguments = std::move(f_arguments);
 		this->index = index;
 	}
 };
