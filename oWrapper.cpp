@@ -65,7 +65,7 @@ bool oWrapper::CreateObject(const std::string& file) {
 				continue;
 			}
 
-			if (tokens[0] == "function") {
+			if (tokens[0] == "define") {
 				_new_object->Functions.insert(std::make_pair(tokens[1], ""));
 				continue;
 			}
