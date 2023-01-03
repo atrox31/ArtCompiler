@@ -27,7 +27,7 @@ std::vector<unsigned char> OutputCode;
 
 
 template <typename E>
-constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
+constexpr typename std::underlying_type<E>::type ToUnderlying(E e) noexcept {
 	return static_cast<typename std::underlying_type<E>::type>(e);
 }
 
@@ -116,9 +116,9 @@ bool TryToParse(std::string value, const std::string& type) {
 	return false;
 }
 
-void WriteString(std::string text) {
+void WriteString(const std::string& text) {
 	if (text.length() == 0) return;
-	for (char i : text)
+	for (const char i : text)
 	{
 		if((unsigned char)i != '\"')
 		OutputCode.push_back((unsigned char)i);
@@ -131,7 +131,7 @@ void WriteBit(short int value) {
 }
 
 void WriteCommand(Command value) {
-	OutputCode.push_back((unsigned char)to_underlying(value));
+	OutputCode.push_back((unsigned char)ToUnderlying(value));
 }
 
 void WriteValue(const std::string& type, short int value) {
@@ -142,43 +142,44 @@ void WriteValue(const std::string& type, short int value) {
 }
 
 
-class TokenCompiller {
+class TokenCompiler {
 
 	std::vector<std::string> _tokens;
 	std::vector<std::string> _code;
-	int postion;
-	int postion_max;
-	std::vector<int> line;
-	std::vector<int> skip_ptr;
-	std::string current;
+	int _position;
+	int _position_max;
+	std::vector<int> _line;
+	std::vector<int> _skip_ptr;
+	std::string _current;
 
 public:
-	TokenCompiller(std::string code) {
-		line = std::vector<int>();
-		skip_ptr = std::vector<int>();
+	explicit TokenCompiler(std::string code) {
+		_line = std::vector<int>();
+		_skip_ptr = std::vector<int>();
 		_tokens = std::vector<std::string>();
 		_code = std::vector<std::string>();
 		for (std::string code : Explode(code, '\n')) {
 			std::vector<std::string> tokens = MakeTokens(code);
 			_tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
-			line.push_back((int)tokens.size() - 1);
+			_line.push_back((int)tokens.size() - 1);
 			_code.push_back(code);
 		}
-		postion = -1;
-		postion_max = (int)_tokens.size() - 1;
+		_position = -1;
+		_position_max = (int)_tokens.size() - 1;
 	}
 
-	std::string GetCode(int i) {
+	std::string GetCode(const int i) {
 		return _code[i];
 	}
 
-	int GetLine() {
+	int GetLine() const
+	{
 		int cline = 0;
 		int cpos = 0;
-		for (int i = 0; i < line.size() - 1; i++) {
-			cpos += line[i];
+		for (int i = 0; i < _line.size() - 1; i++) {
+			cpos += _line[i];
 			cline++;
-			if (cpos >= postion) {
+			if (cpos >= _position) {
 				return cline;
 			}
 		}
@@ -187,67 +188,68 @@ public:
 
 	void EnterNextScope() {
 		WriteBit(0);
-		skip_ptr.push_back((int)OutputCode.size() - 1);
+		_skip_ptr.push_back((int)OutputCode.size() - 1);
 	}
 	bool ExitScope() {
-		int skip = ((int)OutputCode.size() - 1) - skip_ptr.back();
+		int skip = ((int)OutputCode.size() - 1) - _skip_ptr.back();
 		if (skip > 254) {
 			Error("scope is too long! ("+std::to_string(skip)+") max 254",9);
 			return false;
 		}
-		OutputCode[skip_ptr.back()] = (unsigned char)skip;
-		skip_ptr.pop_back();
+		OutputCode[_skip_ptr.back()] = (unsigned char)skip;
+		_skip_ptr.pop_back();
 		return true;
 	}
 
 	std::string Next() {
-		if (postion + 1 > postion_max) return "";
-		++postion;
-		current = _tokens[postion];
-		return _tokens[postion];
+		if (_position + 1 > _position_max) return "";
+		++_position;
+		_current = _tokens[_position];
+		return _tokens[_position];
 	}
 	void Skip() {
-		if (postion < postion_max) {
-			postion++;
-			current = _tokens[postion];
+		if (_position < _position_max) {
+			_position++;
+			_current = _tokens[_position];
 		}
 	}
 	std::string SeekNext() {
-		if (postion + 1 > postion_max) return "";
-		return _tokens[postion + 1];
+		if (_position + 1 > _position_max) return "";
+		return _tokens[_position + 1];
 	}
 
 	std::string Prev() {
-		if (postion == 0) return _tokens[0];
-		return _tokens[postion - 1];
+		if (_position == 0) return _tokens[0];
+		return _tokens[_position - 1];
 	}
 
 	void Back() {
-		postion--;
-		current = _tokens[postion];
+		_position--;
+		_current = _tokens[_position];
 	}
 
 	std::string Current() {
-		return _tokens[postion];
+		return _tokens[_position];
 	}
 
-	bool IsEnd() {
-		return (postion >= postion_max);
+	[[nodiscard]] bool IsEnd() const
+	{
+		return (_position >= _position_max);
 	}
 
 	bool Continue() {
-		postion++;
-		current = _tokens[postion];
-		if (postion > postion_max) postion = postion_max;
-		return (postion == postion_max);
+		_position++;
+		_current = _tokens[_position];
+		if (_position > _position_max) _position = _position_max;
+		return (_position == _position_max);
 	}
 };
 
-bool GetValues(TokenCompiller* tc, Object* obj, const std::string& type);
+bool GetValues(TokenCompiler* tc, Object* obj, const std::string& type);
 
-bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
+bool GetFunction(TokenCompiler* tc, Object* obj, function* func) {
 	WriteCommand(Command::FUNCTION);
-	int args = (short int)func->f_arguments.size();
+	const int args = (short int)func->f_arguments.size();
 	WriteBit((short int)func->index);
 	WriteBit((short int)args);
 	if (tc->Next() != "(") {
@@ -258,7 +260,7 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 	if (args > 0) {
 		for (int i = 0; i < args; i++) {
 			std::string n_type = func->f_arguments[i].Type;
-			bool ret = GetValues(tc, obj, n_type);
+			const bool ret = GetValues(tc, obj, n_type);
 			tc->Skip();
 			if (tc->Current() == ",") tc->Skip();
 			if (ret == false) return false;
@@ -272,10 +274,9 @@ bool GetFunction(TokenCompiller* tc, Object* obj, function* func) {
 	return true;
 }
 
-bool GetValues(TokenCompiller* tc, Object* obj, const std::string& type) {
-	std::string g_variable = tc->Current();
-	function* t_fun = fWrapper::GetFunction(g_variable);
-	if (t_fun != nullptr) {
+bool GetValues(TokenCompiler* tc, Object* obj, const std::string& type) {
+	const std::string g_variable = tc->Current();
+	if (function* t_fun = fWrapper::GetFunction(g_variable); t_fun != nullptr) {
 		if (t_fun->f_return.Type == type) {
 			return GetFunction(tc, obj, t_fun);
 		}
@@ -284,8 +285,7 @@ bool GetValues(TokenCompiller* tc, Object* obj, const std::string& type) {
 			return false;
 		}
 	}
-	variable* t_var = obj->FindLocal(g_variable);
-	if (t_var != nullptr) { // zmienna
+	if (const variable* t_var = obj->FindLocal(g_variable); t_var != nullptr) { // variable
 		if (t_var->Type == type) {
 			WriteCommand(Command::LOCAL_variable);
 			//WriteBit(getVariableIndex(t_var->Type));
@@ -298,7 +298,7 @@ bool GetValues(TokenCompiller* tc, Object* obj, const std::string& type) {
 		}
 	}
 	else {
-		// wartoœæ
+		// value
 		if (g_variable == "null") {
 			WriteCommand(Command::NULL_VALUE);
 			return true;
@@ -327,23 +327,14 @@ inline bool file_exists(const std::string& name) {
 	return f.good();
 }
 
-/*
-int exit_error() {
-	int a = 0;
-	return 10 / a;
-}
-#undef EXIT_FAILURE
-#define EXIT_FAILURE exit_error();
-*/
-
 int main(int argc, char** argv) {
-	std::cout << "ArtCore Compiler " << VERSION_MAIN << "." << VERSION_SUB << std::endl;
 	fWrapper::Init();
 	oWrapper::Init();
 	std::string output;
-	bool atLeastOneLibIsLoaded = false;
-	bool atLeastOneObjectisLoaded = false;
-	bool atLestOutputIsLoaded = false;
+	bool at_least_one_lib_is_loaded = false;
+	bool at_least_one_objects_loaded = false;
+	bool at_lest_output_is_loaded = false;
+	bool quiet = false;
 
 	if (argc < 2) {
 		std::cout << "more args is needed" << std::endl;
@@ -355,20 +346,13 @@ int main(int argc, char** argv) {
 		if (mode.back() == ' ') {
 			mode = mode.substr(0, mode.length() - 2);
 		}
+		if (mode == "-q")
+		{
+			quiet = true;
+		}
 		if (mode == "-version") {
 			std::cout << VERSION_MAIN << '.' << VERSION_SUB << '.' << VERSION_PATH << std::endl;
-		}
-		if (mode == "-debug" ) {
-			output = "D:\\projekt\\object_compile.acp";
-			fWrapper::AddLib("D:\\projekt\\AScript.lib");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_player\\main.asc");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_bullet\\main.asc");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy\\main.asc");
-			oWrapper::CreateObject("C:\\Users\\atrox\\Desktop\\SpaceKompakt\\object\\o_enemy_bullet\\main.asc");
-			atLeastOneLibIsLoaded = true;
-			atLeastOneObjectisLoaded = true;
-			atLestOutputIsLoaded = true;
-			break;
+			return EXIT_SUCCESS;
 		}
 		if (mode == "-lib") {
 			std::string argument = argv[i + 1];
@@ -377,8 +361,8 @@ int main(int argc, char** argv) {
 					argument = argument.substr(1, argument.length() - 2);
 				}
 				if (fWrapper::AddLib(argument)) {
-					atLeastOneLibIsLoaded = true;
-					std::cout << "Lib loaded: " << argument << std::endl;
+					at_least_one_lib_is_loaded = true;
+					if(!quiet) std::cout << "Lib loaded: " << argument << std::endl;
 				}
 				else {
 					return EXIT_FAILURE;
@@ -396,8 +380,8 @@ int main(int argc, char** argv) {
 					argument = argument.substr(1, argument.length() - 2);
 				}
 				if (oWrapper::CreateObject(argument)) {
-					atLeastOneObjectisLoaded = true;
-					std::cout << "Obj loaded: " << argument << std::endl;
+					at_least_one_objects_loaded = true;
+					if (!quiet) std::cout << "Obj loaded: " << argument << std::endl;
 				}
 				else {
 					return EXIT_FAILURE;
@@ -414,8 +398,8 @@ int main(int argc, char** argv) {
 				argument = argument.substr(1, argument.length() - 2);
 			}
 			output = argument;
-			atLestOutputIsLoaded = true;
-			std::cout << "Output set: " << argument << std::endl;
+			at_lest_output_is_loaded = true;
+			if (!quiet) std::cout << "Output set: " << argument << std::endl;
 			i++;
 		}
 
@@ -425,26 +409,18 @@ int main(int argc, char** argv) {
 		});
 	OutputCode = std::vector<unsigned char>();
 
-	if (!atLeastOneLibIsLoaded) {
+	if (!at_least_one_lib_is_loaded) {
 		std::cout << "Error: no lib added" << std::endl;
 		return EXIT_FAILURE;
 	}
-	if( !atLeastOneObjectisLoaded ) {
+	if( !at_least_one_objects_loaded ) {
 		std::cout << "Error: no object added" << std::endl;
 		return EXIT_FAILURE;
 	}
-	if( !atLestOutputIsLoaded ) {
+	if( !at_lest_output_is_loaded ) {
 		std::cout << "Error: no output added" << std::endl;
 		return EXIT_FAILURE;
 	}
-	// compiller
-	/*
-	WriteCommand(Command::TYPEDEF);
-	for (int i = 0; i < ARRAY_SIZE(variable_type); i++) {
-		WriteString(variable_type[i]);
-	}
-	WriteCommand(Command::END);
-	*/
 
 	// first bajt
 	WriteBit('A');
@@ -463,7 +439,6 @@ int main(int argc, char** argv) {
 		for (variable& local : obj->GetLocals()) {
 			WriteCommand(Command::LOCAL_variable_DEFINITION);
 			WriteBit(getVariableIndex(local.Type));
-			WriteBit(local.index);
 			WriteString(local.Name);
 		}
 		WriteCommand(Command::END);
@@ -473,7 +448,7 @@ int main(int argc, char** argv) {
 			WriteString(fun.first);
 			c_object = obj->Name;
 			c_func = fun.first;
-			TokenCompiller tc(fun.second);
+			TokenCompiler tc(fun.second);
 			tc.EnterNextScope();
 			while (!tc.IsEnd()) {
 				c_line = tc.GetLine();
@@ -652,7 +627,7 @@ int main(int argc, char** argv) {
 									continue;
 								}
 								else {
-									Error("Wrong type to compare as seeccond",32);
+									Error("Wrong type to compare as seccond",32);
 									return EXIT_FAILURE;
 								}
 							}
@@ -682,11 +657,11 @@ int main(int argc, char** argv) {
 
 		}
 		WriteCommand(Command::END);
-		std::cout << obj->Name << "<<" << std::endl;
+		if (!quiet) std::cout << obj->Name << "<<" << std::endl;
 	}
 	WriteCommand(Command::END);
 
-	std::cout << "Compilation complite" << std::endl;
+	if (!quiet) std::cout << "Compilation complite" << std::endl;
 
 	std::ofstream outFile(output, std::ios_base::binary);
 	// the important part
@@ -694,6 +669,6 @@ int main(int argc, char** argv) {
 		outFile << e;
 	}
 	outFile.close();
-	std::cout << "Created " << output << std::endl;
+	if (!quiet) std::cout << "Created " << output << std::endl;
 	return EXIT_SUCCESS;
 }
