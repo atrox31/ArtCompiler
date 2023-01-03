@@ -11,4 +11,4 @@ std::vector<std::string> MakeTokens(std::string& line, bool skip_semicolon = fal
 void Error2(const std::string& message, int error_nr);
 template <typename T>
 bool VectorContain(std::vector<T>& vector, T element);
-#define Error(msg, x) Error2(msg, __LINE__);
+#define Error(msg, x) Error2(msg, __LINE__)
