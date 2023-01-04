@@ -42,7 +42,7 @@ bool fWrapper::AddLib(const std::string& lib_name) {
 
 			if (tokens.size() > 4) {
 				for (int i = 3; i < tokens.size() - 1; i += 3) {
-					if (i + 1 < (int)tokens.size()) {
+					if (i + 1 < static_cast<int>(tokens.size())) {
 						f_arguments.emplace_back(tokens[i + 1], tokens[i]);
 					}
 				}

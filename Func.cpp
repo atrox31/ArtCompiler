@@ -66,7 +66,7 @@ std::vector<std::string> MakeTokens(std::string& line, bool skip_semicolon) {
 
 		if (skip_semicolon) {
 			if (c_char == ';') {
-				i = (int)line.length();
+				i = static_cast<int>(line.length());
 				continue;
 			}
 		}
@@ -149,7 +149,7 @@ std::vector<std::string> MakeTokens(std::string& line, bool skip_semicolon) {
 			}
 			else {
 				c_token += c_char;
-				if ((size_t)i == line.length() - 1) {
+				if (static_cast<size_t>(i) == line.length() - 1) {
 					tokens.emplace_back(c_token);
 				}
 			}

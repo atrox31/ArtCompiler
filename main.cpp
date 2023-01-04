@@ -103,7 +103,7 @@ bool TryToParse(std::string value, const std::string& type) {
 		return true;
 	}
 	else if (type == "color") {
-		const int len = (int)value.length();
+		const int len = static_cast<int>(value.length());
 		// rgb or rgba
 		if ( !(len == 7 || len == 9)) return false;
 		if (value[0] != '#') return false;
@@ -132,25 +132,25 @@ void WriteString(const std::string& text) {
 	if (text.length() == 0) return;
 	for (const char i : text)
 	{
-		if((unsigned char)i != '\"')
-		OutputCode.push_back((unsigned char)i);
+		if(static_cast<unsigned char>(i) != '\"')
+		OutputCode.push_back(static_cast<unsigned char>(i));
 	}
 	OutputCode.push_back('\1');
 }
 
 void WriteBit(short int value) {
-	OutputCode.push_back((unsigned char)value);
+	OutputCode.push_back(static_cast<unsigned char>(value));
 }
 
 void WriteCommand(Command value) {
-	OutputCode.push_back((unsigned char)ToUnderlying(value));
+	OutputCode.push_back(static_cast<unsigned char>(ToUnderlying(value)));
 }
 
 void WriteValue(const std::string& type, short int value) {
 	if (type.length() == 0) return;
 	short int _type = getVariableIndex(type);
-	OutputCode.push_back((unsigned char)_type);
-	OutputCode.push_back((unsigned char)value);
+	OutputCode.push_back(static_cast<unsigned char>(_type));
+	OutputCode.push_back(static_cast<unsigned char>(value));
 }
 
 
@@ -173,11 +173,11 @@ public:
 		for (std::string code : Explode(code, '\n')) {
 			std::vector<std::string> tokens = MakeTokens(code);
 			_tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
-			_line.push_back((int)tokens.size() - 1);
+			_line.push_back(static_cast<int>(tokens.size()) - 1);
 			_code.push_back(code);
 		}
 		_position = -1;
-		_position_max = (int)_tokens.size() - 1;
+		_position_max = static_cast<int>(_tokens.size()) - 1;
 	}
 
 	std::string GetCode(const int i) {
@@ -203,10 +203,10 @@ public:
 		WriteBit(0);
 		WriteBit(0);
 		
-		_skip_ptr.push_back((int)OutputCode.size() - 1);
+		_skip_ptr.push_back(static_cast<int>(OutputCode.size()) - 1);
 	}
 	bool ExitScope() {
-		const unsigned int skip = ((int)OutputCode.size() - 1) - _skip_ptr.back();
+		const unsigned int skip = (static_cast<int>(OutputCode.size()) - 1) - _skip_ptr.back();
 		if (skip > 0xFFFF) {
 			Error("scope is too long! ("+std::to_string(skip)+") max 65535",9);
 			return false;
@@ -214,8 +214,8 @@ public:
 		unsigned char skip_bite[2];
 		Uint32To2ByteChar(skip, skip_bite);
 
-		OutputCode[_skip_ptr.back()] = skip_bite[0];
-		OutputCode[_skip_ptr.back()+1] = skip_bite[1];
+		OutputCode[_skip_ptr.back()-1] = skip_bite[0];
+		OutputCode[_skip_ptr.back()] = skip_bite[1];
 		_skip_ptr.pop_back();
 		return true;
 	}
@@ -268,9 +268,9 @@ bool GetValues(TokenCompiler* tc, Object* obj, const std::string& type);
 
 bool GetFunction(TokenCompiler* tc, Object* obj, function* func) {
 	WriteCommand(Command::FUNCTION);
-	const int args = (short int)func->f_arguments.size();
-	WriteBit((short int)func->index);
-	WriteBit((short int)args);
+	const int args = static_cast<short int>(func->f_arguments.size());
+	WriteBit(static_cast<short int>(func->index));
+	WriteBit(static_cast<short int>(args));
 	if (tc->Next() != "(") {
 		Error("bad token '(' needed but " + tc->Current() + " given",10);
 		return false;
