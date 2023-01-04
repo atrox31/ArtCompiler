@@ -8,7 +8,7 @@ variable::variable(std::string name, std::string type) {
 	this->index = -1;
 }
 
-variable::variable(variable& var, int index)
+variable::variable(variable& var, const int index)
 {
 	this->Name = var.Name;
 	this->Type = var.Type;

@@ -137,15 +137,15 @@ void WriteString(const std::string& text) {
 	OutputCode.push_back('\1');
 }
 
-void WriteBit(short int value) {
+void WriteBit(const short int value) {
 	OutputCode.push_back(static_cast<unsigned char>(value));
 }
 
-void WriteCommand(Command value) {
+void WriteCommand(const Command value) {
 	OutputCode.push_back(static_cast<unsigned char>(ToUnderlying(value)));
 }
 
-void WriteValue(const std::string& type, short int value) {
+void WriteValue(const std::string& type, const short int value) {
 	if (type.length() == 0) return;
 	const short int _type = getVariableIndex(type);
 	OutputCode.push_back(static_cast<unsigned char>(_type));

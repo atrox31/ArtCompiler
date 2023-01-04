@@ -10,7 +10,7 @@ extern std::string c_func;
 extern std::string c_object;
 extern std::string c_line_code;
 
-void Error2(const std::string& message, int error_nr) {
+void Error2(const std::string& message, const int error_nr) {
 	std::cout << "Error at line: '" << c_line << "' in Object: '" << c_object << "' Function: '" << c_func << "' - Message: " << message << "[" << error_nr << "]" << std::endl;
 	std::cout << c_line_code << std::endl;
 std::exit(error_nr);
