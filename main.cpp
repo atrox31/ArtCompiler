@@ -327,6 +327,55 @@ inline bool file_exists(const std::string& name) {
 	return f.good();
 }
 
+class Token
+{
+private:
+	std::string _data_normal;
+	std::string _data_lower;
+public:
+	explicit Token(std::string string)
+	{
+		_data_normal = string;
+		std::transform(string.begin(), string.end(), string.begin(),
+			[](const unsigned char c) { return std::tolower(c); });
+		_data_lower = string;
+	}
+	Token(const Token& copy)
+	{
+		_data_normal = copy._data_normal;
+		_data_lower = copy._data_lower;
+	}
+	Token operator+=(std::string string)
+	{
+		_data_normal += string;
+		std::transform(string.begin(), string.end(), string.begin(),
+			[](const unsigned char c) { return std::tolower(c); });
+		_data_lower += string;
+		return *this;
+	}
+	std::string GetNormal()
+	{
+		return _data_normal;
+	}
+	std::string GetLower()
+	{
+		return _data_lower;
+	}
+
+	[[nodiscard]] bool Empty() const
+	{
+		return _data_normal.empty();
+	}
+
+	void New(std::string string)
+	{
+		_data_normal = string;
+		std::transform(string.begin(), string.end(), string.begin(),
+			[](const unsigned char c) { return std::tolower(c); });
+		_data_lower = string;
+	}
+};
+
 int main(int argc, char** argv) {
 	fWrapper::Init();
 	oWrapper::Init();
@@ -453,14 +502,14 @@ int main(int argc, char** argv) {
 			while (!tc.IsEnd()) {
 				c_line = tc.GetLine();
 				c_line_code = tc.GetCode(c_line);
-				std::string token = tc.Next();
-				if (token.empty()) {
+				Token token(tc.Next());
+				if (token.Empty()) {
 					tc.Continue();
 					continue;
 				}
 				// other
 				{
-					if (token == "other") {
+					if (token.GetLower() == "other") {
 						std::string obj_name;
 						if (tc.Next() == "(") {
 							obj_name = tc.Next();
@@ -500,7 +549,7 @@ int main(int argc, char** argv) {
 				}
 				// variable
 				{
-					variable* var = obj->FindLocal(token);
+					variable* var = obj->FindLocal(token.GetNormal());
 					if (var != nullptr) {
 						if (isValidOperator(tc.Next())) { // change variable
 							WriteCommand(Command::SET);
@@ -520,7 +569,7 @@ int main(int argc, char** argv) {
 				}
 				// function
 				{
-					function* fun = fWrapper::GetFunction(token);
+					function* fun = fWrapper::GetFunction(token.GetNormal());
 					if (fun != nullptr) {
 						if (!GetFunction(&tc, obj, fun)) {
 							return EXIT_FAILURE;
@@ -530,7 +579,7 @@ int main(int argc, char** argv) {
 				}
 				// if
 				{
-					if (token == "if") {
+					if (token.GetLower() == "if") {
 						WriteCommand(Command::IF_TEST);
 						if (tc.Next() != "("){
 							Error("bad token '(' needed but " + tc.Current() + " given",22);
@@ -540,10 +589,10 @@ int main(int argc, char** argv) {
 						std::string comp_type = "undefined";
 						bool have_operator = false;
 						while (tc.SeekNext() != ")") {
-							token = tc.Next();
+							token.New(tc.Next());
 							// other
 							{
-								if (token == "other") {
+								if (token.GetLower() == "other") {
 									std::string obj_name;
 									if (tc.Next() == "(") {
 										obj_name = tc.Next();
@@ -567,7 +616,7 @@ int main(int argc, char** argv) {
 										WriteBit(ref->CodeId);
 										WriteValue(var->Type, var->index);
 										comp_type = var->Type;
-										token = tc.Next();
+										token.New(tc.Next());
 									}
 									else {
 										Error("variable '" + searched_variable + "' not found in '" + obj_name + "' object",27); return EXIT_FAILURE;
@@ -575,7 +624,7 @@ int main(int argc, char** argv) {
 								}
 							}
 							{
-								variable* var = obj->FindLocal(token);
+								variable* var = obj->FindLocal(token.GetNormal());
 								if (var != nullptr) {
 									WriteCommand(Command::LOCAL_variable);
 									WriteValue(var->Type, var->index);
@@ -584,7 +633,7 @@ int main(int argc, char** argv) {
 								}
 							}
 							{
-								function* fun = fWrapper::GetFunction(token);
+								function* fun = fWrapper::GetFunction(token.GetLower());
 								if (fun != nullptr) {
 									if (!GetFunction(&tc, obj, fun)) {
 										return EXIT_FAILURE;
@@ -594,7 +643,7 @@ int main(int argc, char** argv) {
 								}
 							}
 							{
-								if (isValidOperator2(token)) {
+								if (isValidOperator2(token.GetNormal())) {
 									if (have_operator) {
 										Error("Bad operator, seccond given",30);
 										return EXIT_FAILURE;
@@ -607,7 +656,7 @@ int main(int argc, char** argv) {
 
 									have_operator = true;
 									WriteCommand(Command::OPERATOR);
-									WriteBit(getOperator2Index(token));
+									WriteBit(getOperator2Index(token.GetNormal()));
 									continue;
 								}
 							}
@@ -616,14 +665,14 @@ int main(int argc, char** argv) {
 									Error("Compilation error, first type to compare must be function or variable", 31);
 									return EXIT_FAILURE;
 								}
-								std::string token2 = token;
+								Token token2 = token;
 								if (comp_type == "point"){
 									token2 += tc.Next();
 								}
-								if (TryToParse(token2, comp_type)) {
+								if (TryToParse(token2.GetNormal(), comp_type)) {
 									WriteCommand(Command::VALUE);
 									WriteBit(getVariableIndex(comp_type));
-									WriteString(token2);
+									WriteString(token2.GetNormal());
 									continue;
 								}
 								else {
@@ -631,7 +680,7 @@ int main(int argc, char** argv) {
 									return EXIT_FAILURE;
 								}
 							}
-							Error("Unexpected token " + token,34);
+							Error("Unexpected token " + token.GetNormal(),34);
 						}
 						if (tc.Next() != ")") {
 							Error("bad token ')' needed but " + tc.Current() + " given",33);
@@ -642,15 +691,25 @@ int main(int argc, char** argv) {
 						tc.EnterNextScope();
 						continue;
 					}
-					if (token == "end") {
+					if (token.GetLower() == "end") {
 						if (!tc.ExitScope()) {
 							Error("unexpected 'end'",35);
 							return EXIT_FAILURE;
 						}
 						continue;
 					}
+					if (token.GetLower() == "else")
+					{
+						if (!tc.ExitScope()) {
+							Error("unexpected 'else'", 36);
+							return EXIT_FAILURE;
+						}
+						WriteCommand(Command::ELSE);
+						tc.EnterNextScope();
+						continue;
+					}
 				}
-				Error("Unexpected token " + token,36);
+				Error("Unexpected token " + token.GetNormal(),37);
 			}
 			WriteCommand(Command::END);
 			tc.ExitScope();
@@ -661,14 +720,14 @@ int main(int argc, char** argv) {
 	}
 	WriteCommand(Command::END);
 
-	if (!quiet) std::cout << "Compilation complite" << std::endl;
+	if (!quiet) std::cout << "Compilation complete" << std::endl;
 
-	std::ofstream outFile(output, std::ios_base::binary);
+	std::ofstream out_file(output, std::ios_base::binary);
 	// the important part
-	for (const auto& e : OutputCode) {
-		outFile << e;
+	for (const unsigned char& e : OutputCode) {
+		out_file << e;
 	}
-	outFile.close();
+	out_file.close();
 	if (!quiet) std::cout << "Created " << output << std::endl;
 	return EXIT_SUCCESS;
 }
