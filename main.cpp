@@ -51,6 +51,18 @@ enum class Command {
 	END,
 };
 
+
+void Uint32To2ByteChar(const unsigned int input, unsigned char* output)
+{
+	output[0] = (input >> 8) & 0xFF;
+	output[1] = input & 0xFF;
+}
+void ByteCharToUint32(const unsigned char* input, unsigned int* output)
+{
+	*output = (input[0] << 8) | (input[1] << 0);
+}
+
+
 bool TryToParse(std::string value, const std::string& type) {
 	if (value == "nul") {
 		return true;
@@ -187,16 +199,23 @@ public:
 	}
 
 	void EnterNextScope() {
+		// write 2 values to convert later to 16bit
 		WriteBit(0);
+		WriteBit(0);
+		
 		_skip_ptr.push_back((int)OutputCode.size() - 1);
 	}
 	bool ExitScope() {
-		int skip = ((int)OutputCode.size() - 1) - _skip_ptr.back();
-		if (skip > 254) {
-			Error("scope is too long! ("+std::to_string(skip)+") max 254",9);
+		const unsigned int skip = ((int)OutputCode.size() - 1) - _skip_ptr.back();
+		if (skip > 0xFFFF) {
+			Error("scope is too long! ("+std::to_string(skip)+") max 65535",9);
 			return false;
 		}
-		OutputCode[_skip_ptr.back()] = (unsigned char)skip;
+		unsigned char skip_bite[2];
+		Uint32To2ByteChar(skip, skip_bite);
+
+		OutputCode[_skip_ptr.back()] = skip_bite[0];
+		OutputCode[_skip_ptr.back()+1] = skip_bite[1];
 		_skip_ptr.pop_back();
 		return true;
 	}
@@ -375,6 +394,21 @@ public:
 		_data_lower = string;
 	}
 };
+
+#include <bitset>
+
+std::ostream& operator<<(std::ostream& os, const std::bitset<32>& dt)
+{
+	for (int i=0; i<32; i+=8)
+	{
+		for (int j = i; j < i+8; j++)
+		{
+			os << dt[j];
+		}
+		os << " ";
+	}
+	return os;
+}
 
 int main(int argc, char** argv) {
 	fWrapper::Init();
