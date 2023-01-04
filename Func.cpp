@@ -63,17 +63,10 @@ std::vector<std::string> MakeTokens(std::string& line, bool skip_semicolon) {
 		const char c_char = line[i];
 		const char n_char = line[(i < line.length()-1 ? i + 1 : line.length()-1)];
 
-
-		if (skip_semicolon) {
-			if (c_char == ';') {
-				i = static_cast<int>(line.length());
-				continue;
-			}
-		}
 		// string from actual char
 		std::string line_s (1, c_char);
 		// space and tabs
-		if (c_char == ' ' || c_char == '\t') {
+		if (c_char == ' ' || c_char == '\t'|| c_char == ';') {
 			if (is_quote) {
 				c_token += c_char;
 				continue;
