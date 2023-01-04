@@ -53,16 +53,43 @@ bool IsComment(std::string line) {
 
 std::vector<std::string> MakeTokens(std::string& line, bool skip_semicolon) {
 	std::vector<std::string> tokens = std::vector<std::string>();
-	if (line.length() == 0) return tokens;
+	if (line.length() == 0) {
+		// empty token for correct line number if comment
+		tokens.emplace_back("");
+		return tokens;
+	}
 
 	std::string c_token;
 	bool is_quote = false;
 
 	for (int i = 0; i < line.length(); i++) {
-		const char p_char = line[ (i > 0 ? i - 1 : 0) ];
+		// previous char
+		const char p_char = i > 0 ? line[i - 1] : '\0';
+		// current char
 		const char c_char = line[i];
-		const char n_char = line[(i < line.length()-1 ? i + 1 : line.length()-1)];
+		// next char
+		const char n_char = i < line.length() - 1 ? line[i + 1] : '\0';
 
+		if(c_char == '/' && n_char == '/')
+		{
+			// comment in line
+			if (!c_token.empty()) {
+				tokens.emplace_back(c_token);
+			}
+			if(tokens.empty())
+			{
+				// insert empty token if not any
+				tokens.emplace_back("");
+			}
+			return tokens;
+		}
+		// for ArtScript.lib, semicons are use to comment
+		if (skip_semicolon) {
+			if (c_char == ';') {
+				i = static_cast<int>(line.length());
+				continue;
+			}
+		}
 		// string from actual char
 		std::string line_s (1, c_char);
 		// space and tabs

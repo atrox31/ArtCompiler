@@ -45,7 +45,7 @@ bool oWrapper::CreateObject(const std::string& file) {
 	Object* _new_object = new Object();
 	for (std::string line : objc) {
 		c_line++;
-		if (IsComment(line)) continue;
+
 		std::vector<std::string> tokens = MakeTokens(line);
 
 		if (tokens[0] == "object") {
@@ -72,6 +72,7 @@ bool oWrapper::CreateObject(const std::string& file) {
 
 			if (tokens[0] == "@end") {
 				object_definition = false;
+				continue;
 			}
 		}
 
@@ -87,7 +88,13 @@ bool oWrapper::CreateObject(const std::string& file) {
 				currentFunction = "";
 				continue;
 			}
-			_new_object->Functions[currentFunction] += line + '\n';
+			if (IsComment(line)) {
+				// add empty line to get correct line number
+				_new_object->Functions[currentFunction] += '\n';
+			}
+			else {
+				_new_object->Functions[currentFunction] += line + '\n';
+			}
 		}
 
 	}

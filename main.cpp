@@ -11,6 +11,9 @@
 #include <boost/lexical_cast.hpp>
 
 #include "main.h"
+
+#include <filesystem>
+
 #include "Members.h"
 #include "Func.h"
 #include "fWrapper.h"
@@ -164,12 +167,12 @@ class TokenCompiler {
 	std::string _current;
 
 public:
-	explicit TokenCompiler(std::string code) {
+	explicit TokenCompiler(std::string token_code) {
 		_line = std::vector<int>();
 		_skip_ptr = std::vector<int>();
 		_tokens = std::vector<std::string>();
 		_code = std::vector<std::string>();
-		for (std::string code : Explode(code, '\n')) {
+		for (std::string code : Explode(token_code, '\n')) {
 			std::vector<std::string> tokens = MakeTokens(code);
 			_tokens.insert(_tokens.end(), tokens.begin(), tokens.end());
 			_line.push_back(static_cast<int>(tokens.size()) - 1);
@@ -431,6 +434,30 @@ int main(int argc, char** argv) {
 		if (mode == "-q")
 		{
 			quiet = true;
+		}
+		if (mode == "-debug")
+		{
+			at_lest_output_is_loaded = true;
+			output = "debug_input\\debug_output.acp";
+			if (file_exists("debug_input\\AScript.lib"))
+			{
+				if (fWrapper::AddLib("debug_input\\AScript.lib")) {
+					at_least_one_lib_is_loaded = true;
+					std::cout << "Lib loaded: " << "debug_input\\AScript.lib" << std::endl;
+				}
+				for (const auto& entry : std::filesystem::directory_iterator("debug_input"))
+				{
+					// if put this to if test then this fail
+					const int e_AScript = static_cast<int>(entry.path().string().find(".lib"));
+					const int e_debug_output = static_cast<int>(entry.path().string().find(".acp"));
+					if (e_AScript > 0) continue;
+					if (e_debug_output > 0) continue;
+					if (oWrapper::CreateObject(entry.path().string())) {
+						at_least_one_objects_loaded = true;
+						std::cout << "Obj loaded: " << entry.path().string() << std::endl;
+					}
+				}
+			}
 		}
 		if (mode == "-version") {
 			std::cout << VERSION_MAIN << '.' << VERSION_SUB << '.' << VERSION_PATH << std::endl;
