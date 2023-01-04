@@ -117,8 +117,7 @@ bool TryToParse(std::string value, const std::string& type) {
 		return true;
 	}
 	else if (type == "point") {
-		
-		auto point = Split(value, ':');
+		const auto point = Split(value, ':');
 		if (point.size() != 2) { Error("try to parse " + value + " to " + type + " - error",6); return false; }
 		if (!TryToParse(point[0], "float")){ Error("point[0] of '" + value + "' value='"+ point[0] + "' - error",7); return false; }
 		if (!TryToParse(point[1], "float")){ Error("point[1] of '" + value + "' value='"+ point[1] + "' - error",8); return false; }
@@ -148,7 +147,7 @@ void WriteCommand(Command value) {
 
 void WriteValue(const std::string& type, short int value) {
 	if (type.length() == 0) return;
-	short int _type = getVariableIndex(type);
+	const short int _type = getVariableIndex(type);
 	OutputCode.push_back(static_cast<unsigned char>(_type));
 	OutputCode.push_back(static_cast<unsigned char>(value));
 }
@@ -342,7 +341,7 @@ bool GetValues(TokenCompiler* tc, Object* obj, const std::string& type) {
 	return true;
 }
 inline bool file_exists(const std::string& name) {
-	std::ifstream f(name.c_str());
+	const std::ifstream f(name.c_str());
 	return f.good();
 }
 
