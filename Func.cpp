@@ -31,7 +31,7 @@ const std::vector<std::string> Explode(std::string& String, const char Delim)
 	return tokens;
 }
 
-const std::vector<std::string> Split(std::string& String, const char Delim)
+const std::vector<std::string> Split(const std::string& String, const char Delim)
 {
 	std::vector<std::string> internal;
 	std::stringstream ss(String);

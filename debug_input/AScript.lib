@@ -1,0 +1,100 @@
+point new_point(float x, float y);Make point (<float>, <float>).;New point from value or other.
+float new_direction(point from, point to);Make direction from <point> to <point>.;Value are from 0 to 359.
+Rectangle new_rectangle(int x1, int y1, int x2, int y2);Make Rectangle from <int>, <int> to <int>, <int>.;This is const Rectangle, not width and height.
+Rectangle new_rectangle_f(float x1, float y1, float x2, float y2);Make Rectangle from <float>, <float> to <float>, <float>.;This is const Rectangle, not width and height.
+sprite get_sprite(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
+texture get_texture(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
+music get_music(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
+sound get_sound(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
+font get_font(string name);Get asset handle by name <string>;Expensive function, try to not call it every frame. Call it to function and store.
+int sprite_get_width(sprite spr);Get width of <sprite>;Get int value.
+int sprite_get_height(sprite spr);Get height of <sprite>;Get int value.
+int sprite_get_frames(sprite spr);Get _frames number of <sprite>;Get int value.
+null sprite_set_animation_speed(float speed);Set animation value <float> _frames per second;Every sprite can have own animation speed
+null sprite_set_animation_loop(bool loop);Set animation loop value <bool>;Every animation end generate event ON_ANIMATION_END
+null move_to_point(point p, float speed);Move current instance to <point> with <speed> px per second.;Call it every frame.
+null move_instant(point p);Move instantly to target <point>;This changes x and y. Not cheking for collision;
+null move_to_direction(float direction, float speed);Move instance toward direction of <float> (0-359) with <float> speed px per seccond;If direction is not in range its clipped to 360.
+float distance_to_point(point p);Give distance to <point>;Measure from current instance to target point.
+float distance_between_point(point p1, point p2);Give distance from <point> to <point>;Measure distance.
+float distance_to_instance(instance i);Give distance to <instance> instance;Measure from current instance to target point. If target not exists return 0
+null move_forward(float speed);Move current instance forward with <speed> px per second.;Call it every frame. Function give build-in direction variable.
+float direction_to_point(point p);Give direction to <point> in degree (-180 : 180);Measure from current instance to target point.
+float direction_between_point(point p1, point p2);Give direction from <point> to <point> in degree (-180 : 180);Measure distance.
+float direction_to_instance(instance i);Give direction to <instance> in degree (-180 : 180);Measure from current instance to target point. If target not exists return own direction
+null draw_sprite(sprite spr, float x, float y, float frame);Draw <sprite> on location (<float>,<float>) with target frame <frame>;Draw default sprite. To more options use draw_sprite_ex
+null draw_sprite_ex(sprite spr, float x, float y, float frame, float x_scale, float y_scale, float x_center, float y_center, float angle, float alpha);
+null draw_texture(texture tex, float x, float y);Draw <texture> on (<float>,<float>).;Draw standard texture with it normal dimensions. For extended option use 'Draw texture extended';
+null draw_texture_ex(texture tex, float x, float y, float x_scale, float y_scale, float angle, float alpha);Draw <texture> on (<float>,<float>), with scale (<float>,<float>), angle <float> and aplha <float>;Angle range is (0 - 359) alpha (0.0f - 1.0f).
+null draw_sprite_self();Draw self sprite on self coords with sprite scale and angle;Use build-in variables;
+null draw_shape_rectangle(float x1, float y2, float x2, float y2, color color);Draw frame of Rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw Rectangle on final coords;
+null draw_shape_rectangle_r(Rectangle rect, color color);Draw frame of <Rectangle> with color <color>.;Draw Rectangle;
+null draw_shape_rectangle_filled(float x1, float y2, float x2, float y2, color color);Draw filled of Rectangle from (<float>,<float>) to (<float>,<float>) with color <color>.;Draw Rectangle on final coords;
+null draw_shape_rectangle_filled_r(Rectangle rect, color color);Draw filled <Rectangle> with color <color>.;Draw Rectangle;
+null draw_shape_circle(float x, float y, float radius, color color);Draw Circle in point (<float>,<float>) with radius <float> and color <color>;
+null draw_shape_circle_p(point p, float radius, color color);Draw Circle in point <point> with radius <float> and color <color>;
+null draw_shape_circle_filled(float x, float y, float radius, color color);Draw filled Circle in point (<float>,<float>) with radius <float> and color <color>;
+null draw_shape_circle_filled_p(point p, float radius, color color);Draw filled Circle in point <point> with radius <float> and color <color>;
+int math_min_i(int a, int b);Get minimum value from <int> or <int>;
+int math_max_i(int a, int b);Get maximum value from <int> or <int>;
+float math_min(float a, float b);Get minimum value from <float> or <float>;
+float math_max(float a, float b);Get maximum value from <float> or <float>;
+point global_get_mouse();Get point of current mouse postion;If map is bigger than screen this give map coords not screen;
+null set_self_sprite(sprite spr); Set self sprite to <sprite> with default scale, angle, speed, loop; You can mod sprite via set_sprite_ etc.;
+float get_pos_x(); Get x coords of instance;
+float get_pos_y(); Get y coords of instance;
+null sound_play(sound asset);Play <asset> sound global;For postion call sound_play_at(sound asset)
+null music_play(music asset);Play <asset> music.;There is only one music at once;
+null sprite_next_frame(); Set SelfSprite next frame; If sprite loop is enable, frame = 0 if frame > frame_max;
+null sprite_prev_frame(); Set SelfSprite previus frame; If sprite loop is enable, frame = frame_max if frame < frame_max 0;
+null sprite_set_frame(int frame); Set SelfSprite frame no <int>.; If frame is not exists nothing happen;
+null code_do_nothing();Do nothing, empty action;Use when there is no else in if
+null set_body_type(string type, int value);Set body type for instance, of <string> and optional <int> value; type is enum: None,Sprite,Rect,Circle
+null instance_set_tag(string tag);Set tag for current instance <string>.
+instance collision_get_collider();Return reference to instance with this object is collide;Other colliders must be solid too to collide;
+string collision_get_collider_tag();Get tag of instance that is coliding with this object;Other colliders must be solid too to collide;
+string collision_get_collider_name();Get name of instance that is coliding with this object;Other colliders must be solid too to collide;
+int collision_get_collider_id();Get id of instance that is coliding with this object;Other colliders must be solid too to collide;
+int get_random(int max);Get random value [0,<int>).;0 is include max is exclude;
+int get_random_range(int min, int max);Get random value [<int>,<int>).;0 is include max is exclude;
+null scene_change_transmission(string scene, string transmission);[NOT_IMPLEMENTED_YET];0;
+null scene_change(string scene);Change scene to <scene>;This is quick change, for transmission use scene_change_transmission[NOT_IMPLEMENTED_YET];
+float get_direction_of(instance target);Return direction of <instance> instance in degree (-180 : 180);Use with collision_get_collider, if target not exists return own direction
+instance instance_spawn(string name, float x, float y);Spawn object <string> at (<float>,<float>) and return reference to it;Ypu can use reference to pass arguments;
+instance instance_spawn_on_point(string name, point xy);Spawn object <string> at (<point>) and return reference to it;Ypu can use reference to pass arguments;
+null instance_create(string name, float x, float y);Spawn object <string> at (<float>,<float>) in current scene;This not return reference;
+null set_direction_for_target(instance target, float direction);Set <instance> direction to <float> value in degree (-180 : 180);You can get reference from id of instance
+null set_direction(float direction);Set current direction to <float> in degree (-180 : 180);
+float convert_int_to_float(int value);Convert <int> to float type;
+int convert_float_to_int(float value);Convert <float> to int type;
+null instance_delete_self();Delete self;
+float get_direction();Get current direction;
+float math_add(float a, float b);Get sum of <float> + <float>;
+float math_sub(float a, float b);Get sub of <float> - <float>;
+float math_mul(float a, float b);Get mul of <float> * <float>;
+float math_div(float a, float b);Get div of <float> / <float>;
+float get_point_x(point point);Get x of <point> point;
+float get_point_y(point point);Get y of <point> point;
+null collision_push_other(bool myself);Push other instance in other direction, if <bool> then push this instance too;Like opposite magnets;
+bool mouse_is_pressed(int button);Return state of button <int>;Left button is 1, right is 3
+float get_delta_time();Return delta time of frame.;Every build-in action of moving or collision uses delta time, do not use twice!
+null code_break(); Break from current function; Everything will be lost...
+null draw_text(font font, int x, int y, string text, color color);Use <font> and draw <string> on screen on (<int>,<int>) with <color> color;If font is null, default font is used;
+string convert_int_to_string(int input);Convert <int> to string;
+string convert_float_to_string(int input);Convert <int> to string;
+string string_add(string str1, string str2);Create new string from <string> and <string>
+null sprite_set_scale(point scale);Set scale for self sprite <point>;Scale is from point (width, height)
+null draw_text_in_frame(font font, string text, float x, float y, color text_color, color frame_color, color background_color);Using <font> draw <text> in frame at (<float>,<float>) with <color>. Frame color is <color> and background <color>;
+null gui_change_visibility(string guiTag, bool visible);Change visibility variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
+null gui_change_enabled(string guiTag, bool enable);Change enabled variable for <string> to <bool>;Give path to element panel1/button1 by tags. Root is in default first tag do not include it
+null code_execute_trigger(string trigger);Execute trigger <string> on current scene;Create this triggers in scene editor.
+null code_wait(int milliseconds);Suspend this trigger for <int> milliseconds
+null game_exit();Exit the game;
+point get_instance_position(instance instance);Get position of <instance>;
+float get_instance_position_x(instance instance);Get position X of <instance>;
+float get_instance_position_y(instance instance);Get position Y of <instance>;
+null instance_create_point(string name, point xy);Spawn object <string> at (<point>) in current scene;This not return reference;
+null instance_delete_other(instance instance);Delete <instance>;
+instance instance_find_by_tag(string tag);Find instance by tag: <string>;All tags must be unique, else returned instance is first found;
+bool instance_exists(instance instance);Get current status of <instance>
+bool instance_alive(instance instance);Get current status of <instance>

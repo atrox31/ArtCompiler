@@ -51,7 +51,7 @@ enum class Command {
 	OPERATOR,
 	// polecenia
 	TYPE, IF_BODY, IF_TEST, ELSE,
-	END,
+	END, LOOP
 };
 
 
@@ -210,7 +210,7 @@ public:
 	bool ExitScope() {
 		const unsigned int skip = (static_cast<int>(OutputCode.size()) - 1) - _skip_ptr.back();
 		if (skip > 0xFFFF) {
-			Error("scope is too long! ("+std::to_string(skip)+") max 65535",9);
+			Error("scope is too long! tokens = "+std::to_string(skip)+" | max tokens = " + std::to_string(0xFFFF),9);
 			return false;
 		}
 		unsigned char skip_bite[2];
@@ -268,7 +268,7 @@ public:
 
 bool GetValues(TokenCompiler* tc, Object* obj, const std::string& type);
 
-bool GetFunction(TokenCompiler* tc, Object* obj, function* func) {
+bool GetFunction(TokenCompiler* tc, Object* obj, const function* func) {
 	WriteCommand(Command::FUNCTION);
 	const int args = static_cast<short int>(func->f_arguments.size());
 	WriteBit(static_cast<short int>(func->index));
@@ -635,6 +635,14 @@ int main(int argc, char** argv) {
 							return EXIT_FAILURE;
 						}
 						continue;
+					}
+				}
+				// loop
+				{
+					if (token.GetLower() == "loop") {
+						WriteCommand(Command::LOOP);
+						tc.EnterNextScope();
+						//TODO: no good idea for now
 					}
 				}
 				// if
