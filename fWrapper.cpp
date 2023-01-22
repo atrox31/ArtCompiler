@@ -7,18 +7,23 @@
 #include "Members.h"
 
 fWrapper* fWrapper::_instance = nullptr;
-fWrapper::fWrapper() {
+
+fWrapper::fWrapper()
+{
 	this->_functions = std::vector<function>();
 }
 
-void fWrapper::Init() {
-	fWrapper::_instance = new fWrapper();
+void fWrapper::Init()
+{
+	_instance = new fWrapper();
 };
 
-bool fWrapper::AddLib(const std::string& lib_name) {
+bool fWrapper::AddLib(const std::string& lib_name)
+{
 	if (_instance == nullptr) return false;
 	std::ifstream t(lib_name);
-	if (!t.good()) {
+	if (!t.good())
+	{
 		std::cout << "Error: file '" << lib_name << "' not found" << std::endl;
 		return false;
 	}
@@ -26,23 +31,29 @@ bool fWrapper::AddLib(const std::string& lib_name) {
 	std::vector<std::string> Alib = Explode(tmp, '\n');
 	t.close();
 	int i = 0;
-	for (std::string line : Alib) {
+	for (std::string line : Alib)
+	{
 		if (IsComment(line)) continue;
 		std::vector<std::string> tokens = MakeTokens(line, true);
-		if (tokens.size() >= 4) {
+		if (tokens.size() >= 4)
+		{
 			//point new_point(float x,float y)
 			std::string f_name = tokens[1];
 			variable f_return;
-			std::vector<variable> f_arguments = std::vector<variable>();
+			auto f_arguments = std::vector<variable>();
 
-			if (isValidVariable(tokens[0])) {
+			if (isValidVariable(tokens[0]))
+			{
 				f_return.Name = "return";
 				f_return.Type = tokens[0];
 			}
 
-			if (tokens.size() > 4) {
-				for (int i = 3; i < tokens.size() - 1; i += 3) {
-					if (i + 1 < static_cast<int>(tokens.size())) {
+			if (tokens.size() > 4)
+			{
+				for (int i = 3; i < tokens.size() - 1; i += 3)
+				{
+					if (i + 1 < static_cast<int>(tokens.size()))
+					{
 						f_arguments.emplace_back(tokens[i + 1], tokens[i]);
 					}
 				}
@@ -53,7 +64,8 @@ bool fWrapper::AddLib(const std::string& lib_name) {
 	return true;
 }
 
-function* fWrapper::GetFunction(const std::string& name) {
+function* fWrapper::GetFunction(const std::string& name)
+{
 	for (auto& _function : _instance->_functions)
 	{
 		if (_function.f_name == name) return &_function;
@@ -63,7 +75,8 @@ function* fWrapper::GetFunction(const std::string& name) {
 
 int fWrapper::GetFunction_id(const std::string& name)
 {
-	for (int i = 0; i < _instance->_functions.size(); i++) {
+	for (int i = 0; i < _instance->_functions.size(); i++)
+	{
 		if (_instance->_functions[i].f_name == name) return i;
 	}
 	return -1;
@@ -71,15 +84,18 @@ int fWrapper::GetFunction_id(const std::string& name)
 
 void fWrapper::PrintAllFunctions()
 {
-	for (function& f : _instance->_functions) {
+	for (function& f : _instance->_functions)
+	{
 		std::cout << f.f_name << " return: " << f.f_return.Type << " takes: ";
-		if (!f.f_arguments.empty()) {
+		if (!f.f_arguments.empty())
+		{
 			for (auto& f_argument : f.f_arguments)
 			{
 				std::cout << f_argument.Name << "[" << f_argument.Type << "] ";
 			}
 		}
-		else {
+		else
+		{
 			std::cout << "nothing";
 		}
 		std::cout << std::endl;

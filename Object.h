@@ -4,8 +4,10 @@
 #include <string>
 #include <map>
 
-class Object {
+class Object
+{
 	std::vector<variable> _locals;
+
 public:
 	int CodeId = -1;
 	std::map<std::string, std::string> Functions;
@@ -15,4 +17,3 @@ public:
 	variable* FindLocal(const std::string& name);
 	std::vector<variable> GetLocals();
 };
-

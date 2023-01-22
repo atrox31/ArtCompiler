@@ -7,13 +7,16 @@
 
 #include "variable.h"
 
-class function {
+class function
+{
 public:
 	std::string f_name;
 	variable f_return;
 	std::vector<variable> f_arguments;
 	int index;
-	function(std::string f_name, variable f_return, std::vector<variable> f_arguments, const int index) {
+
+	function(std::string f_name, variable f_return, std::vector<variable> f_arguments, const int index)
+	{
 		this->f_name = std::move(f_name);
 		this->f_return = std::move(f_return);
 		this->f_arguments = std::move(f_arguments);

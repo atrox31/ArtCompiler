@@ -1,12 +1,16 @@
 #include "Object.h"
 #include "Func.h"
 
-Object::Object() {
+Object::Object()
+{
 	_locals = std::vector<variable>();
-	 Functions = std::map<std::string, std::string>();
+	Functions = std::map<std::string, std::string>();
 }
-void Object::SetLocal(const std::string& name, const std::string& type) {
-	if (FindLocal(name) != nullptr) {
+
+void Object::SetLocal(const std::string& name, const std::string& type)
+{
+	if (FindLocal(name) != nullptr)
+	{
 		Error("variable '" + name + "' exists in this object", 1);
 		return;
 	}
@@ -19,7 +23,8 @@ void Object::SetLocal(const std::string& name, const std::string& type) {
 	_locals.back().index = c;
 }
 
-variable* Object::FindLocal(const std::string& name) {
+variable* Object::FindLocal(const std::string& name)
+{
 	for (auto& local : _locals)
 	{
 		if (local.Name == name) return &local;

@@ -2,7 +2,8 @@
 
 #include <utility>
 
-variable::variable(std::string name, std::string type) {
+variable::variable(std::string name, std::string type)
+{
 	this->Name = std::move(name);
 	this->Type = std::move(type);
 	this->index = -1;

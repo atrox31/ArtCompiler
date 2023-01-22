@@ -13,24 +13,28 @@ oWrapper* oWrapper::_instance;
 std::vector<Object*> oWrapper::_obj;
 int oWrapper::c_CodeId;
 
-void oWrapper::Init() {
-	oWrapper::_instance = new oWrapper();
-	oWrapper::_obj = std::vector<Object*>();
-	oWrapper::c_CodeId = 0;
+void oWrapper::Init()
+{
+	_instance = new oWrapper();
+	_obj = std::vector<Object*>();
+	c_CodeId = 0;
 }
 
-oWrapper::oWrapper() {
-	oWrapper::_instance = this;
+oWrapper::oWrapper()
+{
+	_instance = this;
 }
 
-bool oWrapper::CreateObject(const std::string& file) {
+bool oWrapper::CreateObject(const std::string& file)
+{
 	c_line = -1;
 	c_func = "init";
 	c_object = "undefined";
 
 	if (_instance == nullptr) return false;
 	std::ifstream t(file);
-	if (!t.good()) {
+	if (!t.good())
+	{
 		std::cout << "Error: file '" << file << "' not found" << std::endl;
 		return false;
 	}
@@ -42,22 +46,25 @@ bool oWrapper::CreateObject(const std::string& file) {
 	bool function_definition = false;
 	std::string currentFunction;
 
-	Object* _new_object = new Object();
-	for (std::string line : objc) {
+	auto _new_object = new Object();
+	for (std::string line : objc)
+	{
 		c_line++;
 
 		std::vector<std::string> tokens = MakeTokens(line);
 
-		if (tokens[0] == "object") {
+		if (tokens[0] == "object")
+		{
 			_new_object->Name = tokens[1];
 			c_object = tokens[1];
 			object_definition = true;
 			continue;
 		}
 
-		if (object_definition) {
-
-			if (tokens[0] == "local") {
+		if (object_definition)
+		{
+			if (tokens[0] == "local")
+			{
 				std::string name, type;
 				name = tokens[2];
 				type = tokens[1];
@@ -65,38 +72,44 @@ bool oWrapper::CreateObject(const std::string& file) {
 				continue;
 			}
 
-			if (tokens[0] == "define") {
+			if (tokens[0] == "define")
+			{
 				_new_object->Functions.insert(std::make_pair(tokens[1], ""));
 				continue;
 			}
 
-			if (tokens[0] == "@end") {
+			if (tokens[0] == "@end")
+			{
 				object_definition = false;
 				continue;
 			}
 		}
 
-		if (tokens[0] == "function") {
+		if (tokens[0] == "function")
+		{
 			function_definition = true;
 			currentFunction = Explode(tokens[1], ':').back();
 			continue;
 		}
 
-		if (function_definition) {
-			if (tokens[0] == "@end") {
+		if (function_definition)
+		{
+			if (tokens[0] == "@end")
+			{
 				function_definition = false;
 				currentFunction = "";
 				continue;
 			}
-			if (IsComment(line)) {
+			if (IsComment(line))
+			{
 				// add empty line to get correct line number
 				_new_object->Functions[currentFunction] += '\n';
 			}
-			else {
+			else
+			{
 				_new_object->Functions[currentFunction] += line + '\n';
 			}
 		}
-
 	}
 	_new_object->CodeId = c_CodeId++;
 	_obj.push_back(_new_object);
@@ -105,16 +118,17 @@ bool oWrapper::CreateObject(const std::string& file) {
 
 std::vector<Object*> oWrapper::GetObjects()
 {
-	return oWrapper::_obj;
+	return _obj;
 }
 
 Object* oWrapper::GetObjectByName(const std::string& name)
 {
-	for (const auto& obj : oWrapper::_obj) {
-		if (obj->Name == name) {
+	for (const auto& obj : _obj)
+	{
+		if (obj->Name == name)
+		{
 			return obj;
 		}
 	}
 	return nullptr;
 }
-

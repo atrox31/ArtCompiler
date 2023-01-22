@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 
-class variable {
+class variable
+{
 public:
 	std::string Name;
 	std::string Type;
@@ -10,6 +11,3 @@ public:
 	variable(variable& var, int index);
 	variable();
 };
-
-
-

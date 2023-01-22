@@ -5,9 +5,11 @@
 #include <vector>
 #include "Object.h"
 
-class oWrapper {
+class oWrapper
+{
 	static std::vector<Object*> _obj;
 	static oWrapper* _instance;
+
 public:
 	static int c_CodeId;
 	static void Init();
