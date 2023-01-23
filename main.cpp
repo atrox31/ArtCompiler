@@ -6,9 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include<algorithm>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+#include <algorithm>
 
 #include "main.h"
 
@@ -109,7 +107,7 @@ bool TryToParse(std::string value, const std::string& type)
 	}
 	if (type == "bool")
 	{
-		boost::algorithm::to_lower(value);
+		ToLower(value);
 		if (value == "true" || value == "false") return true;
 		Error("try to parse '" + value + "' to '" + type + "'", 4);
 		return false;
@@ -378,7 +376,7 @@ bool GetValues(TokenCompiler* tc, Object* obj, const std::string& type)
 		{
 			WriteCommand(Command::LOCAL_VARIABLE);
 			//WriteBit(getVariableIndex(t_var->Type));
-			WriteValue(t_var->Type, t_var->index);
+			WriteValue(t_var->Type, t_var->Index);
 			return true;
 		}
 		Error("variable type missed, " + type + " expected but " + t_var->Type + " is here", 13);
@@ -695,7 +693,7 @@ int main(int argc, char** argv)
 						// instance type
 						WriteBit(ref->CodeId);
 						// variable type + index
-						WriteValue(var->Type, var->index);
+						WriteValue(var->Type, var->Index);
 
 						if (!isValidOperator(tc.Next()))
 						{
@@ -721,7 +719,7 @@ int main(int argc, char** argv)
 							// change variable
 							WriteCommand(Command::SET);
 							WriteBit(getOperatorIndex(tc.Current()));
-							WriteValue(var->Type, var->index);
+							WriteValue(var->Type, var->Index);
 							tc.Skip();
 							if (!GetValues(&tc, obj, var->Type))
 							{
@@ -807,7 +805,7 @@ int main(int argc, char** argv)
 									{
 										WriteCommand(Command::OTHER);
 										WriteBit(ref->CodeId);
-										WriteValue(var->Type, var->index);
+										WriteValue(var->Type, var->Index);
 										comp_type = var->Type;
 										token.New(tc.Next());
 									}
@@ -824,7 +822,7 @@ int main(int argc, char** argv)
 								if (var != nullptr)
 								{
 									WriteCommand(Command::LOCAL_VARIABLE);
-									WriteValue(var->Type, var->index);
+									WriteValue(var->Type, var->Index);
 									comp_type = var->Type;
 									continue;
 								}

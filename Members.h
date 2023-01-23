@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <boost/algorithm/string.hpp>
 
 const std::string operators[] = {
 	"+=",
