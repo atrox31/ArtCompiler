@@ -20,7 +20,7 @@ void Object::SetLocal(const std::string& name, const std::string& type)
 	{
 		if (local.Type == type) c++;
 	}
-	_locals.back().index = c;
+	_locals.back().Index = c;
 }
 
 variable* Object::FindLocal(const std::string& name)

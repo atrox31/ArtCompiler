@@ -66,9 +66,9 @@ bool fWrapper::AddLib(const std::string& lib_name)
 
 function* fWrapper::GetFunction(const std::string& name)
 {
-	for (auto& _function : _instance->_functions)
+	for (auto& function : _instance->_functions)
 	{
-		if (_function.f_name == name) return &_function;
+		if (function.f_name == name) return &function;
 	}
 	return nullptr;
 }

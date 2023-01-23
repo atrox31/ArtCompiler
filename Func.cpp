@@ -1,5 +1,6 @@
 #include "Func.h"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -18,29 +19,36 @@ void Error2(const std::string& message, const int error_nr)
 	std::exit(error_nr);
 }
 
-const std::vector<std::string> Explode(std::string& String, const char Delim)
+std::string ToLower(const std::string& string)
+{
+	std::string output(string);
+	std::transform(output.begin(), output.end(), output.begin(),
+		[](const unsigned char c) { return std::tolower(c); });
+	return output;
+}
+
+std::vector<std::string> Explode(std::string& string, const char separator)
 {
 	std::vector<std::string> tokens;
 	size_t prev = 0, pos = 0;
 	do
 	{
-		pos = String.find(Delim, prev);
-		if (pos == std::string::npos) pos = String.length();
-		std::string token = String.substr(prev, pos - prev);
-		if (!token.empty()) tokens.push_back(token);
+		pos = string.find(separator, prev);
+		if (pos == std::string::npos) pos = string.length();
+		if (std::string token = string.substr(prev, pos - prev); !token.empty()) tokens.push_back(token);
 		prev = pos + 1;
 	}
-	while (pos < String.length() && prev < String.length());
+	while (pos < string.length() && prev < string.length());
 	return tokens;
 }
 
-const std::vector<std::string> Split(const std::string& String, const char Delim)
+std::vector<std::string> Split(const std::string& string, const char separator)
 {
 	std::vector<std::string> internal;
-	std::stringstream ss(String);
+	std::stringstream ss(string);
 	std::string tok;
 
-	while (getline(ss, tok, Delim))
+	while (getline(ss, tok, separator))
 	{
 		if (!tok.empty())
 			internal.push_back(tok);

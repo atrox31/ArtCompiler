@@ -6,7 +6,7 @@ class variable
 public:
 	std::string Name;
 	std::string Type;
-	int index;
+	int Index;
 	variable(std::string name, std::string type);
 	variable(variable& var, int index);
 	variable();
