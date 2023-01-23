@@ -107,7 +107,7 @@ bool TryToParse(std::string value, const std::string& type)
 	}
 	if (type == "bool")
 	{
-		ToLower(value);
+		value = ToLower(value);
 		if (value == "true" || value == "false") return true;
 		Error("try to parse '" + value + "' to '" + type + "'", 4);
 		return false;
