@@ -1,7 +1,8 @@
-# ACompiler
-ArtCompiller is part of the ArtEngine system. This program compiles human readable ArtCode scripts in game objects, just like other compilers.<br>
+# ArtCore Compiler
+ArtCompiler is part of the ArtEngine system. This program compiles human readable ArtCode scripts in game objects, just like other compilers.<br>
 ArtCode is custom made script language used in ArtCore games. For more usage examples and game making tutorial visit ArtEditor page.<br>
 <hr>
+
 ## ArtCore
 ArtCore is 2D game engine, currently for Windows, later Android and Linux. The whole system consists of 3 components: engine, editor and compilator. For more information about engine or editor go to their repositiries.<br>
 
