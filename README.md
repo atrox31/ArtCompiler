@@ -1,14 +1,15 @@
-# ACompiler
-ArtCompiller is part of the ArtEngine system. This program compiles human readable ArtCode scripts in game objects, just like other compilers.<br>
-ArtCode is custom made script language used in ArtCore games. For more usage examples and game making tutorial visit ArtEditor page.<br>
+# ArtCore Compiler
+ArtCompiler is part of the ArtCore system. This program compiles human readable ArtCode scripts in game objects, just like other compilers.<br>
+ArtCode is a custom made script language used in ArtCore games. For more usage examples and game making tutorial visit ArtEditor page.<br>
 <hr>
+
 ## ArtCore
 ArtCore is 2D game engine, currently for Windows, later Android and Linux. The whole system consists of 3 components: engine, editor and compilator. For more information about engine or editor go to their repositiries.<br>
 
 ## Compilation
 ArtCore Editor is created in Visual Studio 2022. There is no cmake file to create new projects.<br>
 Simply clone code and compile or download release. There are no non-standard dependencies.<br>
-There it is not advisable to run Compiler standalone. Every object must have a specific structure. ArtEditor cares to properly write objects.<br>
+There is not advisable to run Compiler standalone. Every object must have a specific structure. ArtEditor cares to properly write objects.<br>
 For debug step-by-step run with debugger there is a solution. Create a directory "debug_input", insert "AScript.lib" and a custom write object with ".acp" extension.
 Run with "-debug" command line option to load from debug_input directory.
 
@@ -16,14 +17,14 @@ Run with "-debug" command line option to load from debug_input directory.
 This program is running from ArtEditor when the game is compiled. Editor sends two types of objects: Instance definitions and Scene definitions.<br>
 Instance definitions contain variables and events. Scene contains global variables, gui (interface) events, level triggers and global triggers.<br>
 To compile code it must be written in a special style, more of that later. To run the compilation process open the program with arguments:<br>
-* -lib "path_to_lib" <- this is ArtLib path, file is created by ArtCore and contains all functions with arguments that can be run in game.
+* -lib "path_to_lib" <- this is ArtLib path, file is created by ArtCore and contains all functions with arguments that can be run in a game.
 * -obj "path_to_obj" <- (multiple times) Path to object, every object can be in a separate file or all in one.
 * -output "path_to_file" <- If there is no error write all code in one binary file.
 * -q <- Quiet work. Do not write log info, only errors.
 <br>
 If some error while compilation occurs Art Compiler tries to say exactly what and where is wrong. Error syntax:<br>
 Error at line: 'code_line_no' in Object: 'object_name' Function: 'function_name' - Message: explain_why_error [in_program_line_number]<br>
-In editor this error message transfer to Code editor and select wrong line of code.
+In the editor this error message transfers to Code editor and selects wrong line of code.
 
 # ArtCode
 Style of code is like C/Pascal but this is not another code language. This is script language, so syntax can not be complicated. Everything is 
@@ -31,7 +32,7 @@ executed in the same frame except delayed code. For more information go to ArtEd
 Logic and mathematical operators are always 2 chars. You can assign or modify variables by value or function. Arguments in functions can be
 another function, there is no limit. There is no way to create custom functions for instances but scenes and levels can have custom triggers.<br>
 Script language is case sensitive, type of value is important too. Every variable must be converted to a good type.
-In Core there is stack for every variable type so there is no possibility to cast in runtime.
+In Core there is a stack for every variable type so there is no possibility to cast in runtime.
 
 ## Operators
 Operators work on defined variables. Type variable + operator + value.<br>
